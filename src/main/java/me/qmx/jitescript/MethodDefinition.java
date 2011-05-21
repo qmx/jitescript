@@ -9,6 +9,7 @@ package me.qmx.jitescript;
  * @author qmx
  */
 class MethodDefinition {
+
     private final String methodName;
     private final int modifiers;
     private final String signature;
@@ -20,5 +21,20 @@ class MethodDefinition {
         this.signature = signature;
         this.methodBody = methodBody;
     }
-    
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public int getModifiers() {
+        return modifiers;
+    }
+
+    public MethodBody getMethodBody() {
+        return methodBody;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
 }
