@@ -44,11 +44,11 @@ public abstract class MethodBody implements Opcodes {
         this.methodVisitor = methodVisitor;
     }
     
-    private MethodVisitor getMethodVisitor() {
+    protected MethodVisitor getMethodVisitor() {
         return this.methodVisitor;
     }
     
-    public abstract void executableMethodBody(MethodVisitor mv);
+    public abstract void executableMethodBody();
     
     /**
      * Short-hand for specifying a set of aloads

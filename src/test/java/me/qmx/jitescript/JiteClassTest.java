@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package me.qmx.jitescript;
 
 import java.io.PrintStream;
@@ -45,7 +44,7 @@ public class JiteClassTest {
             {
                 defineMethod("main", ACC_PUBLIC + ACC_STATIC, sig(void.class, String[].class), new MethodBody() {
 
-                    public void executableMethodBody(MethodVisitor mv) {
+                    public void executableMethodBody() {
                         ldc("helloWorld");
                         getstatic(p(System.class), "out", ci(PrintStream.class));
                         swap();
@@ -55,7 +54,7 @@ public class JiteClassTest {
                 });
                 defineMethod("hello", ACC_PUBLIC + ACC_STATIC, sig(String.class, new Class[]{}), new MethodBody() {
 
-                    public void executableMethodBody(MethodVisitor mv) {
+                    public void executableMethodBody() {
                         ldc("helloWorld");
                         areturn();
                     }
