@@ -48,7 +48,7 @@ public class JiteClass implements Opcodes {
             mv.visitCode();
             MethodBody methodBody = def.getMethodBody();
             methodBody.setMethodVisitor(mv);
-            methodBody.executableMethodBody(mv);
+            methodBody.executableMethodBody();
             mv.visitMaxs(1, 1);
             mv.visitEnd();
         }
