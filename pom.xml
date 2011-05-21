@@ -9,11 +9,32 @@
     <packaging>jar</packaging>
 
     <name>jitescript</name>
-    <url>http://maven.apache.org</url>
+    <description>Java API for Bytecode</description>
+    <url>https://github.com/qmx/jitescript</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:qmx/jitescript.git</connection>
+        <developerConnection>scm:git:git@github.com:qmx/jitescript.git</developerConnection>
+        <url>git@github.com:qmx/jitescript.git</url>
+    </scm>
   
     <developers>
         <developer>
@@ -65,6 +86,20 @@
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
