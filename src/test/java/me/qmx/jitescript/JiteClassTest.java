@@ -30,9 +30,7 @@ public class JiteClassTest {
 
                     public void executableMethodBody(MethodVisitor mv) {
                         ldc("helloWorld");
-                        getstatic(ci(System.class),
-                                "out",
-                                ci(PrintStream.class));
+                        getstatic(p(System.class), "out", ci(PrintStream.class));
                         swap();
                         invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
                         voidreturn();
