@@ -2,3 +2,4 @@
 build
 .*.swp
 /target/
+/nb-configuration.xml
