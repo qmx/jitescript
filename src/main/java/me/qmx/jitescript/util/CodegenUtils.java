@@ -10,6 +10,7 @@ import org.objectweb.asm.Type;
  * @author headius
  */
 public class CodegenUtils {
+
     /**
      * Creates a dotted class name from a path/package name
      */
@@ -21,7 +22,7 @@ public class CodegenUtils {
      * Creates a class path name, from a Class.
      */
     public static String p(Class n) {
-        return n.getName().replace('.','/');
+        return n.getName().replace('.', '/');
     }
 
     /**
@@ -88,14 +89,14 @@ public class CodegenUtils {
     public static String human(Class n) {
         return n.getCanonicalName();
     }
-    
+
     /**
      * Create a method signature from the given param types and return values
      */
     public static String sig(Class retval, Class... params) {
         return sigParams(params) + ci(retval);
     }
-    
+
     public static String sig(Class[] retvalParams) {
         Class[] justParams = new Class[retvalParams.length - 1];
         System.arraycopy(retvalParams, 1, justParams, 0, justParams.length);
@@ -108,13 +109,13 @@ public class CodegenUtils {
 
     public static String sigParams(Class... params) {
         StringBuilder signature = new StringBuilder("(");
-        
+
         for (int i = 0; i < params.length; i++) {
             signature.append(ci(params[i]));
         }
-        
+
         signature.append(")");
-        
+
         return signature.toString();
     }
 
@@ -122,7 +123,7 @@ public class CodegenUtils {
         StringBuilder signature = new StringBuilder("(");
 
         signature.append(descriptor);
-        
+
         for (int i = 0; i < params.length; i++) {
             signature.append(ci(params[i]));
         }
@@ -131,34 +132,36 @@ public class CodegenUtils {
 
         return signature.toString();
     }
-    
+
     public static String pretty(Class retval, Class... params) {
         return prettyParams(params) + human(retval);
     }
-    
+
     public static String prettyParams(Class... params) {
         StringBuilder signature = new StringBuilder("(");
-        
+
         for (int i = 0; i < params.length; i++) {
             signature.append(human(params[i]));
-            if (i < params.length - 1) signature.append(',');
+            if (i < params.length - 1) {
+                signature.append(',');
+            }
         }
-        
+
         signature.append(")");
-        
+
         return signature.toString();
     }
-    
+
     public static Class[] params(Class... classes) {
         return classes;
     }
-    
+
     public static Class[] params(Class cls, int times) {
         Class[] classes = new Class[times];
         Arrays.fill(classes, cls);
         return classes;
     }
-    
+
     public static Class[] params(Class cls1, Class clsFill, int times) {
         Class[] classes = new Class[times + 1];
         Arrays.fill(classes, clsFill);
@@ -173,13 +176,13 @@ public class CodegenUtils {
         classes[1] = cls2;
         return classes;
     }
-    
+
     public static String getAnnotatedBindingClassName(String javaMethodName, String typeName, boolean isStatic, int required, int optional, boolean multi, boolean framed) {
         String commonClassSuffix;
         if (multi) {
-            commonClassSuffix = (isStatic ? "$s$" : "$i$" ) + javaMethodName;
+            commonClassSuffix = (isStatic ? "$s$" : "$i$") + javaMethodName;
         } else {
-            commonClassSuffix = (isStatic ? "$s$" : "$i$" ) + required + "$" + optional + "$" + javaMethodName;
+            commonClassSuffix = (isStatic ? "$s$" : "$i$") + required + "$" + optional + "$" + javaMethodName;
         }
         return typeName + commonClassSuffix;
     }
@@ -197,7 +200,7 @@ public class CodegenUtils {
             } else if (value.getClass().isEnum()) {
                 visitor.visitEnum(fieldEntry.getKey(), ci(value.getClass()), value.toString());
             } else if (value instanceof Class) {
-                visitor.visit(fieldEntry.getKey(), Type.getType((Class)value));
+                visitor.visit(fieldEntry.getKey(), Type.getType((Class) value));
             } else {
                 visitor.visit(fieldEntry.getKey(), value);
             }
