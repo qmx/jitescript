@@ -22,6 +22,12 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:qmx/jitescript.git</connection>
+        <developerConnection>scm:git:git@github.com:qmx/jitescript.git</developerConnection>
+        <url>git@github.com:qmx/jitescript.git</url>
+    </scm>
   
     <developers>
         <developer>
