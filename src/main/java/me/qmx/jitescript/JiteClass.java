@@ -25,7 +25,7 @@ public class JiteClass implements Opcodes {
     }
 
     byte[] toBytes() {
-        ClassWriter cw = new ClassWriter(0);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_7, ACC_PUBLIC + ACC_SUPER, this.className, null, "java/lang/Object", null);
         for(MethodDefinition def : methods){
             MethodVisitor mv = cw.visitMethod(def.getModifiers(), def.getMethodName(), def.getSignature(), null, null);
@@ -33,6 +33,7 @@ public class JiteClass implements Opcodes {
             MethodBody methodBody = def.getMethodBody();
             methodBody.setMethodVisitor(mv);
             methodBody.executableMethodBody(mv);
+            mv.visitMaxs(1, 1);
             mv.visitEnd();
         }
         cw.visitEnd();
