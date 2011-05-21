@@ -2,7 +2,6 @@ package me.qmx.jitescript;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.qmx.jitescript.adapter.SkinnyMethodAdapter;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import static me.qmx.jitescript.util.CodegenUtils.*;

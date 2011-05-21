@@ -1,7 +1,6 @@
 package me.qmx.jitescript;
 
 import java.io.PrintStream;
-import me.qmx.jitescript.adapter.SkinnyMethodAdapter;
 import static me.qmx.jitescript.util.CodegenUtils.*;
 import org.junit.Test;
 import org.objectweb.asm.MethodVisitor;
