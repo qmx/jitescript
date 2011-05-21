@@ -9,7 +9,8 @@
     <packaging>jar</packaging>
 
     <name>jitescript</name>
-    <url>http://maven.apache.org</url>
+    <description>Java API for Bytecode</description>
+    <url>https://github.com/qmx/jitescript</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
