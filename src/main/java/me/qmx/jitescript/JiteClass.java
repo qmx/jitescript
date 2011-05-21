@@ -12,20 +12,16 @@ import static me.qmx.jitescript.util.CodegenUtils.*;
  * @author qmx
  */
 public class JiteClass implements Opcodes {
-    private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
 
-    public static interface MethodBody {
-        void executableBody(SkinnyMethodAdapter m);
-    }
-    
+    private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
     private ClassWriter cw;
     private final String className;
 
     public JiteClass(String className) {
         this.className = className;
     }
-    
-    public void defineMethod(String methodName, int modifiers, String signature, MethodBody methodBody){
+
+    public void defineMethod(String methodName, int modifiers, String signature, MethodBody methodBody) {
         this.methods.add(new MethodDefinition(methodName, modifiers, signature, methodBody));
     }
 
@@ -36,5 +32,4 @@ public class JiteClass implements Opcodes {
     private void init() {
         cw = new ClassWriter(0);
     }
-    
 }

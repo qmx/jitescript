@@ -4,8 +4,6 @@
  */
 package me.qmx.jitescript;
 
-import me.qmx.jitescript.JiteClass.MethodBody;
-
 /**
  *
  * @author qmx

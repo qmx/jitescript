@@ -19,14 +19,14 @@ public class JiteClassTest {
             {
                 defineMethod("main", ACC_PUBLIC + ACC_STATIC, sig(void.class, String[].class), new MethodBody() {
 
-                    public void executableBody(SkinnyMethodAdapter m) {
-                        m.ldc("helloWorld");
-                        m.getstatic(ci(System.class),
+                    public void executableMethodBody(MethodVisitor mv) {
+                        ldc("helloWorld");
+                        getstatic(ci(System.class),
                                 "out",
                                 ci(PrintStream.class));
-                        m.swap();
-                        m.invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
-                        m.voidreturn();
+                        swap();
+                        invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
+                        voidreturn();
                     }
                 });
             }
