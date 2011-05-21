@@ -42,7 +42,7 @@ public class JiteClassTest {
         JiteClass jiteClass = new JiteClass(className) {
 
             {
-                defineMethod("main", ACC_PUBLIC + ACC_STATIC, sig(void.class, String[].class), new MethodBody() {
+                defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new MethodBody() {
 
                     public void executableMethodBody() {
                         ldc("helloWorld");
@@ -52,7 +52,7 @@ public class JiteClassTest {
                         voidreturn();
                     }
                 });
-                defineMethod("hello", ACC_PUBLIC + ACC_STATIC, sig(String.class, new Class[]{}), new MethodBody() {
+                defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new MethodBody() {
 
                     public void executableMethodBody() {
                         ldc("helloWorld");
