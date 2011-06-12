@@ -20,8 +20,11 @@
  */
 package me.qmx.jitescript;
 
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
+
 /**
- *
  * @author qmx
  */
 class MethodDefinition {
@@ -52,5 +55,17 @@ class MethodDefinition {
 
     public String getSignature() {
         return signature;
+    }
+
+    public MethodNode getMethodNode() {
+        MethodNode method = new MethodNode(getModifiers(), getMethodName(), getSignature(), null, null);
+        method.instructions.add(getMethodBody().getInstructionList());
+        for (TryCatchBlockNode tryCatchBlockNode : getMethodBody().getTryCatchBlockList()) {
+            method.tryCatchBlocks.add(tryCatchBlockNode);
+        }
+        for (LocalVariableNode localVariableNode : getMethodBody().getLocalVariableList()) {
+            method.localVariables.add(localVariableNode);
+        }
+        return method;
     }
 }

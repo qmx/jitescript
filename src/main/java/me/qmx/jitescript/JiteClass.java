@@ -20,9 +20,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,16 +48,7 @@ public class JiteClass implements Opcodes {
         node.superName = Type.getInternalName(Object.class);
 
         for (MethodDefinition def : methods) {
-            MethodNode method = new MethodNode(def.getModifiers(), def.getMethodName(), def.getSignature(), null, null);
-            method.instructions.add(def.getMethodBody().getInstructionList());
-            for (TryCatchBlockNode tryCatchBlockNode : def.getMethodBody().getTryCatchBlockList()) {
-                method.tryCatchBlocks.add(tryCatchBlockNode);
-            }
-            for (LocalVariableNode localVariableNode : def.getMethodBody().getLocalVariableList()) {
-                method.localVariables.add(localVariableNode);
-            }
-
-            node.methods.add(method);
+            node.methods.add(def.getMethodNode());
         }
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(cw);
