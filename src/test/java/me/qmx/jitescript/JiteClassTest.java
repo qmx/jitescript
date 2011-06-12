@@ -40,14 +40,14 @@ public class JiteClassTest {
     public void testDSL() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final String className = "helloTest";
         JiteClass jiteClass = new JiteClass(className) {{
-            defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new MethodBody() {{
+            defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new CodeBlock() {{
                 ldc("helloWorld");
                 getstatic(p(System.class), "out", ci(PrintStream.class));
                 swap();
                 invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
                 voidreturn();
             }});
-            defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new MethodBody() {{
+            defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new CodeBlock() {{
                 ldc("helloWorld");
                 areturn();
             }});

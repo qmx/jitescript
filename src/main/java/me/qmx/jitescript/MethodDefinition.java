@@ -32,9 +32,9 @@ class MethodDefinition {
     private final String methodName;
     private final int modifiers;
     private final String signature;
-    private final MethodBody methodBody;
+    private final CodeBlock methodBody;
 
-    public MethodDefinition(String methodName, int modifiers, String signature, MethodBody methodBody) {
+    public MethodDefinition(String methodName, int modifiers, String signature, CodeBlock methodBody) {
         this.methodName = methodName;
         this.modifiers = modifiers;
         this.signature = signature;
@@ -49,7 +49,7 @@ class MethodDefinition {
         return modifiers;
     }
 
-    public MethodBody getMethodBody() {
+    public CodeBlock getMethodBody() {
         return methodBody;
     }
 

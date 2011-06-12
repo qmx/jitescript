@@ -30,7 +30,7 @@ import static me.qmx.jitescript.util.CodegenUtils.*;
 /**
  * @author qmx
  */
-public class MethodBody implements Opcodes {
+public class CodeBlock implements Opcodes {
 
     private boolean DEBUG = false;
     private InsnList instructionList = new InsnList();
