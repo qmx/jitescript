@@ -16,15 +16,18 @@
 
 package me.qmx.jitescript;
 
-import org.objectweb.asm.MethodVisitor;
-import java.util.ArrayList;
-import java.util.List;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import static me.qmx.jitescript.util.CodegenUtils.*;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
  * @author qmx
  */
 public class JiteClass implements Opcodes {
@@ -41,18 +44,26 @@ public class JiteClass implements Opcodes {
     }
 
     byte[] toBytes() {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_7, ACC_PUBLIC + ACC_SUPER, this.className, null, "java/lang/Object", null);
-        for(MethodDefinition def : methods){
-            MethodVisitor mv = cw.visitMethod(def.getModifiers(), def.getMethodName(), def.getSignature(), null, null);
-            mv.visitCode();
-            MethodBody methodBody = def.getMethodBody();
-            methodBody.setMethodVisitor(mv);
-            methodBody.executableMethodBody();
-            mv.visitMaxs(1, 1);
-            mv.visitEnd();
+        ClassNode node = new ClassNode();
+        node.version = V1_7;
+        node.access = ACC_PUBLIC + ACC_SUPER;
+        node.name = this.className;
+        node.superName = Type.getInternalName(Object.class);
+
+        for (MethodDefinition def : methods) {
+            MethodNode method = new MethodNode(def.getModifiers(), def.getMethodName(), def.getSignature(), null, null);
+            method.instructions.add(def.getMethodBody().getInstructionList());
+            for (TryCatchBlockNode tryCatchBlockNode : def.getMethodBody().getTryCatchBlockList()) {
+                method.tryCatchBlocks.add(tryCatchBlockNode);
+            }
+            for (LocalVariableNode localVariableNode : def.getMethodBody().getLocalVariableList()) {
+                method.localVariables.add(localVariableNode);
+            }
+
+            node.methods.add(method);
         }
-        cw.visitEnd();
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        node.accept(cw);
         return cw.toByteArray();
     }
 

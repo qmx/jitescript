@@ -15,16 +15,16 @@
  */
 package me.qmx.jitescript;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import static me.qmx.jitescript.util.CodegenUtils.*;
-import org.junit.Test;
-import org.objectweb.asm.MethodVisitor;
-import org.junit.Assert;
 
 /**
- *
  * @author qmx
  */
 public class JiteClassTest {
@@ -34,7 +34,9 @@ public class JiteClassTest {
         public Class<?> define(String className, byte[] bytecode) {
             return super.defineClass(className, bytecode, 0, bytecode.length);
         }
-    };
+    }
+
+    ;
 
     @Test
     public void testDSL() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -43,8 +45,7 @@ public class JiteClassTest {
 
             {
                 defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new MethodBody() {
-
-                    public void executableMethodBody() {
+                    {
                         ldc("helloWorld");
                         getstatic(p(System.class), "out", ci(PrintStream.class));
                         swap();
@@ -52,13 +53,10 @@ public class JiteClassTest {
                         voidreturn();
                     }
                 });
-                defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new MethodBody() {
-
-                    public void executableMethodBody() {
-                        ldc("helloWorld");
-                        areturn();
-                    }
-                });
+                defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new MethodBody() {{
+                    ldc("helloWorld");
+                    areturn();
+                }});
             }
         };
 
