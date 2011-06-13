@@ -40,7 +40,7 @@ public class JiteClass implements Opcodes {
         this.methods.add(new MethodDefinition(methodName, modifiers, signature, methodBody));
     }
 
-    byte[] toBytes() {
+    public byte[] toBytes() {
         ClassNode node = new ClassNode();
         node.version = V1_7;
         node.access = ACC_PUBLIC + ACC_SUPER;
