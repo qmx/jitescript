@@ -861,4 +861,14 @@ public class CodeBlock implements Opcodes {
     public List<LocalVariableNode> getLocalVariableList() {
         return localVariableList;
     }
+
+    public CodeBlock prepend(CodeBlock codeBlock){
+        this.getInstructionList().insert(codeBlock.getInstructionList());
+        return this;
+    }
+
+    public CodeBlock append(CodeBlock codeBlock){
+        this.getInstructionList().add(codeBlock.getInstructionList());
+        return this;
+    }
 }
