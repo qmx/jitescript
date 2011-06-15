@@ -44,6 +44,14 @@ public class CodeBlock implements Opcodes {
         prepend(block);
     }
 
+    public static CodeBlock newCodeBlock() {
+        return new CodeBlock();
+    }
+
+    public static CodeBlock newCodeBlock(CodeBlock block) {
+        return new CodeBlock(block);
+    }
+
     /**
      * Short-hand for specifying a set of aloads
      *

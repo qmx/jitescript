@@ -16,7 +16,6 @@
 
 package me.qmx.jitescript.util;
 
-import me.qmx.jitescript.CodeBlock;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 
@@ -24,25 +23,11 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- *
  * @author headius
  */
 public final class CodegenUtils {
 
-    private CodegenUtils(){}
-
-    /**
-     * Creates a dotted class name from a path/package name
-     */
-    public static CodeBlock newCodeBlock() {
-        return new CodeBlock();
-    }
-
-    /**
-     * Creates a dotted class name from a path/package name
-     */
-    public static CodeBlock newCodeBlock(CodeBlock block) {
-        return new CodeBlock(block);
+    private CodegenUtils() {
     }
 
     /**
