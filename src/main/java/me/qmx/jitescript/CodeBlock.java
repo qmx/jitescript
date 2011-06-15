@@ -509,7 +509,7 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock trycatch(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                         String arg3) {
+                              String arg3) {
         this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
         return this;
     }
@@ -999,7 +999,7 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock visitTableSwitchInsn(int arg0, int arg1, LabelNode arg2,
-                                     LabelNode[] arg3) {
+                                          LabelNode[] arg3) {
         this.instructionList.add(new TableSwitchInsnNode(arg0, arg1, arg2, arg3));
         return this;
     }
@@ -1015,14 +1015,13 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock visitTryCatchBlock(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                                   String arg3) {
+                                        String arg3) {
         this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
         return this;
     }
 
-
     public CodeBlock visitLocalVariable(String arg0, String arg1, String arg2,
-                                   LabelNode arg3, LabelNode arg4, int arg5) {
+                                        LabelNode arg3, LabelNode arg4, int arg5) {
         this.localVariableList.add(new LocalVariableNode(arg0, arg1, arg2, arg3, arg4, arg5));
         return this;
     }
@@ -1042,7 +1041,6 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-
     public InsnList getInstructionList() {
         return instructionList;
     }
@@ -1055,12 +1053,12 @@ public class CodeBlock implements Opcodes {
         return localVariableList;
     }
 
-    public CodeBlock prepend(CodeBlock codeBlock){
+    public CodeBlock prepend(CodeBlock codeBlock) {
         this.getInstructionList().insert(codeBlock.getInstructionList());
         return this;
     }
 
-    public CodeBlock append(CodeBlock codeBlock){
+    public CodeBlock append(CodeBlock codeBlock) {
         this.getInstructionList().add(codeBlock.getInstructionList());
         return this;
     }
