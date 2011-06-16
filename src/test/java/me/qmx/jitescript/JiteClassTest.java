@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static me.qmx.jitescript.CodeBlock.newCodeBlock;
 import static me.qmx.jitescript.util.CodegenUtils.*;
 
 /**
@@ -40,6 +41,7 @@ public class JiteClassTest {
     public void testDSL() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final String className = "helloTest";
         JiteClass jiteClass = new JiteClass(className) {{
+            // you can use the pre-constructor style
             defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new CodeBlock() {{
                 ldc("helloWorld");
                 getstatic(p(System.class), "out", ci(PrintStream.class));
@@ -47,10 +49,13 @@ public class JiteClassTest {
                 invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
                 voidreturn();
             }});
-            defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), new CodeBlock() {{
-                ldc("helloWorld");
-                areturn();
-            }});
+            // or use chained api
+            defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class),
+                    newCodeBlock()
+                            .ldc("helloWorld")
+                            .areturn()
+            );
+
         }};
 
         byte[] classBytes = jiteClass.toBytes();
