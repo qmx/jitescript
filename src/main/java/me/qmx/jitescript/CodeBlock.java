@@ -24,6 +24,7 @@ import org.objectweb.asm.tree.*;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static me.qmx.jitescript.util.CodegenUtils.*;
 
@@ -36,6 +37,9 @@ public class CodeBlock implements Opcodes {
     private InsnList instructionList = new InsnList();
     private List<TryCatchBlockNode> tryCatchBlockList = new ArrayList<TryCatchBlockNode>();
     private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
+    private AtomicInteger slot = new AtomicInteger();
+    private LabelNode start = new LabelNode();
+    private LabelNode end = new LabelNode();
 
     public CodeBlock() {
     }
@@ -1050,7 +1054,10 @@ public class CodeBlock implements Opcodes {
     }
 
     public InsnList getInstructionList() {
-        return instructionList;
+        final InsnList result = new InsnList();
+        result.add(instructionList);
+        result.add(end);
+        return result;
     }
 
     public List<TryCatchBlockNode> getTryCatchBlockList() {
@@ -1059,6 +1066,14 @@ public class CodeBlock implements Opcodes {
 
     public List<LocalVariableNode> getLocalVariableList() {
         return localVariableList;
+    }
+
+    public CodeBlock localVariable(String name, String type) {
+        this.instructionList.add(start);
+        final int index = slot.getAndIncrement();
+        localVariableList.add(new LocalVariableNode(name, type, null, start, end, index));
+        astore(index);
+        return this;
     }
 
     public CodeBlock prepend(CodeBlock codeBlock) {
