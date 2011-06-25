@@ -42,10 +42,12 @@ public class CodeBlock implements Opcodes {
     private LabelNode end = new LabelNode();
 
     public CodeBlock() {
+        this.instructionList.add(start);
     }
 
     public CodeBlock(CodeBlock block) {
         prepend(block);
+        this.instructionList.add(start);
     }
 
     public static CodeBlock newCodeBlock() {
@@ -1069,7 +1071,6 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock localVariable(String name, String type) {
-        this.instructionList.add(start);
         final int index = slot.getAndIncrement();
         localVariableList.add(new LocalVariableNode(name, type, null, start, end, index));
         astore(index);

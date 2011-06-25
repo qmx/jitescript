@@ -1,5 +1,6 @@
 package me.qmx.jitescript;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 
@@ -28,6 +29,6 @@ public class CodeBlockTest {
         final JiteClassTest.DynamicClassLoader dynamicClassLoader = new JiteClassTest.DynamicClassLoader();
         final Class<?> lol = dynamicClassLoader.define("LOL", classBytes);
         final Object result = lol.getDeclaredMethod("test").invoke(null);
-        System.out.println(result);
+        Assert.assertNotNull(result);
     }
 }
