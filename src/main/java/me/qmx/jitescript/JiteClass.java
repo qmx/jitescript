@@ -24,6 +24,10 @@ import org.objectweb.asm.tree.ClassNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.qmx.jitescript.CodeBlock.newCodeBlock;
+import static me.qmx.jitescript.util.CodegenUtils.p;
+import static me.qmx.jitescript.util.CodegenUtils.sig;
+
 /**
  * @author qmx
  */
@@ -38,6 +42,15 @@ public class JiteClass implements Opcodes {
 
     public void defineMethod(String methodName, int modifiers, String signature, CodeBlock methodBody) {
         this.methods.add(new MethodDefinition(methodName, modifiers, signature, methodBody));
+    }
+
+    public void defineDefaultConstructor() {
+        defineMethod("<init>", ACC_PUBLIC, sig(void.class),
+                newCodeBlock()
+                        .aload(0)
+                        .invokespecial(p(Object.class), "<init>", sig(void.class))
+                        .voidreturn()
+        );
     }
 
     public byte[] toBytes() {
