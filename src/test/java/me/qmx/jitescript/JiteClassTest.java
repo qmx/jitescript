@@ -58,10 +58,7 @@ public class JiteClassTest {
 
         }};
 
-        byte[] classBytes = jiteClass.toBytes();
-
-        DynamicClassLoader loader = new DynamicClassLoader();
-        Class<?> clazz = loader.define(className, classBytes);
+        Class<?> clazz = loadClassFromBytes(className, jiteClass);
         Method helloMethod = clazz.getMethod("hello");
         Object result = helloMethod.invoke(null);
         Assert.assertEquals("helloWorld", result);
@@ -70,4 +67,12 @@ public class JiteClassTest {
         mainMethod.invoke(null, (Object) new String[]{});
 
     }
+
+    private Class<?> loadClassFromBytes(String className, JiteClass jiteClass) {
+        byte[] classBytes = jiteClass.toBytes();
+
+        DynamicClassLoader loader = new DynamicClassLoader();
+        return loader.define(className, classBytes);
+    }
+
 }
