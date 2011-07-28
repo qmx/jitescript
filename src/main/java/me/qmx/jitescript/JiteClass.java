@@ -34,10 +34,18 @@ import static me.qmx.jitescript.util.CodegenUtils.sig;
 public class JiteClass implements Opcodes {
 
     private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
+    private final List<String> interfaces = new ArrayList<String>();
     private final String className;
 
     public JiteClass(String className) {
         this.className = className;
+    }
+
+    public JiteClass(String className, String[] interfaces) {
+        this.className = className;
+        for (String anInterface : interfaces) {
+            this.interfaces.add(anInterface);
+        }
     }
 
     public void defineMethod(String methodName, int modifiers, String signature, CodeBlock methodBody) {
@@ -59,6 +67,9 @@ public class JiteClass implements Opcodes {
         node.access = ACC_PUBLIC | ACC_SUPER;
         node.name = this.className;
         node.superName = Type.getInternalName(Object.class);
+        if (!this.interfaces.isEmpty()) {
+            node.interfaces.addAll(this.interfaces);
+        }
 
         for (MethodDefinition def : methods) {
             node.methods.add(def.getMethodNode());

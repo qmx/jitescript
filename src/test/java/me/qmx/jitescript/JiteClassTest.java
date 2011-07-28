@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 
 import static me.qmx.jitescript.CodeBlock.newCodeBlock;
 import static me.qmx.jitescript.util.CodegenUtils.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author qmx
@@ -75,4 +76,24 @@ public class JiteClassTest {
         return loader.define(className, classBytes);
     }
 
+    @Test
+    public void testInterfaceImpl() throws IllegalAccessException, InstantiationException {
+        String className = "Test";
+        JiteClass jiteClass = new JiteClass(className, new String[]{p(Runnable.class)}) {{
+
+            defineDefaultConstructor();
+
+            defineMethod("run", ACC_PUBLIC, sig(void.class),
+                    newCodeBlock()
+                            .ldc("Test")
+                            .aprintln()
+                            .voidreturn()
+            );
+        }};
+
+
+        Class<?> clazz = loadClassFromBytes(className, jiteClass);
+        Object o = clazz.newInstance();
+        assertTrue(o instanceof Runnable);
+    }
 }
