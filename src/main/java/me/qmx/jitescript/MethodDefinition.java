@@ -27,7 +27,7 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 /**
  * @author qmx
  */
-class MethodDefinition {
+public class MethodDefinition {
 
     private final String methodName;
     private final int modifiers;
