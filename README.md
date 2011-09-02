@@ -11,4 +11,4 @@ Requirements
 
 You must download asm-jar from http://forge.ow2.org/projects/asm/ version 4.0_RC1 and manually install with maven
 
-> mvn install:install-file -Dfile=asm-all-4.0_RC1.jar -DgroupId=all -DartifactId=asm-all -Dversion=4.0_RC1 -Dpackaging=jar
+> mvn install:install-file -Dfile=asm-all-4.0_RC1.jar -DgroupId=asm -DartifactId=asm-all -Dversion=4.0_RC1 -Dpackaging=jar
