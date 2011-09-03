@@ -23,7 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static me.qmx.jitescript.CodeBlock.newCodeBlock;
-import static me.qmx.jitescript.util.CodegenUtils.*;
+import static me.qmx.jitescript.util.CodegenUtils.ci;
+import static me.qmx.jitescript.util.CodegenUtils.p;
+import static me.qmx.jitescript.util.CodegenUtils.sig;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -91,9 +93,24 @@ public class JiteClassTest {
             );
         }};
 
-
         Class<?> clazz = loadClassFromBytes(className, jiteClass);
         Object o = clazz.newInstance();
         assertTrue(o instanceof Runnable);
+    }
+
+    public static class LOL {
+
+    }
+
+    @Test
+    public void generateClassWithSuperclasses() throws IllegalAccessException, InstantiationException {
+        String className = "Teste";
+        String superClass = p(LOL.class);
+        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {{
+            defineDefaultConstructor();
+        }};
+        Class<?> clazz = loadClassFromBytes(className, jiteClass);
+        Object o = clazz.newInstance();
+        assertTrue(o instanceof LOL);
     }
 }

@@ -18,7 +18,6 @@ package me.qmx.jitescript;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.ArrayList;
@@ -33,16 +32,23 @@ import static me.qmx.jitescript.util.CodegenUtils.sig;
  */
 public class JiteClass implements Opcodes {
 
+    public static final String[] INTERFACES = new String[]{};
     private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
     private final List<String> interfaces = new ArrayList<String>();
     private final String className;
+    private final String superClassName;
 
     public JiteClass(String className) {
-        this.className = className;
+        this(className, INTERFACES);
     }
 
     public JiteClass(String className, String[] interfaces) {
+        this(className, p((Class) Object.class), interfaces);
+    }
+
+    public JiteClass(String className, String superClassName, String[] interfaces) {
         this.className = className;
+        this.superClassName = superClassName;
         for (String anInterface : interfaces) {
             this.interfaces.add(anInterface);
         }
@@ -70,7 +76,7 @@ public class JiteClass implements Opcodes {
         node.version = version.getVer();
         node.access = ACC_PUBLIC | ACC_SUPER;
         node.name = this.className;
-        node.superName = Type.getInternalName(Object.class);
+        node.superName = this.superClassName;
         if (!this.interfaces.isEmpty()) {
             node.interfaces.addAll(this.interfaces);
         }
