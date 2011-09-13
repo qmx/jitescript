@@ -16,8 +16,8 @@
 
 package me.qmx.jitescript;
 
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodHandle;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -194,7 +194,7 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock invokedynamic(String arg0, String arg1, MethodHandle arg2, Object... arg3) {
+    public CodeBlock invokedynamic(String arg0, String arg1, Handle arg2, Object... arg3) {
         this.instructionList.add(new InvokeDynamicInsnNode(arg0, arg1, arg2, arg3));
         return this;
     }
@@ -981,7 +981,7 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock visitInvokeDynamicInsn(String arg0, String arg1, MethodHandle arg2, Object... arg3) {
+    public CodeBlock visitInvokeDynamicInsn(String arg0, String arg1, Handle arg2, Object... arg3) {
         this.instructionList.add(new InvokeDynamicInsnNode(arg0, arg1, arg2, arg3));
         return this;
     }
