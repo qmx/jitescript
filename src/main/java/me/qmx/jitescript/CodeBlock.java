@@ -57,7 +57,7 @@ public class CodeBlock implements Opcodes {
     private InsnList instructionList = new InsnList();
     private List<TryCatchBlockNode> tryCatchBlockList = new ArrayList<TryCatchBlockNode>();
     private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
-    private List<String> localvars = new ArrayList<String>();
+    private List<String> localVariables = new ArrayList<String>();
     private int arity = 0;
 
     public CodeBlock() {
@@ -65,7 +65,7 @@ public class CodeBlock implements Opcodes {
 
     public CodeBlock(CodeBlock block) {
         this.arity = block.arity();
-        this.localvars.addAll(block.localvars);
+        this.localVariables.addAll(block.localVariables);
         prepend(block);
     }
 
@@ -1105,19 +1105,23 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock pushLocalVar(String arg) {
-        this.localvars.add(arg);
-        int slot = localvars.indexOf(arg);
+        this.localVariables.add(arg);
+        int slot = localVariables.indexOf(arg);
         astore(arity() + slot);
         return this;
     }
 
     public CodeBlock popLocalVar(String arg){
-        int slot = localvars.indexOf(arg);
+        int slot = localVariables.indexOf(arg);
         aload(slot);
         return this;
     }
 
     public int arity() {
         return this.arity;
+    }
+
+    public List<String> getLocalVariables() {
+        return localVariables;
     }
 }
