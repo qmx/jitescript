@@ -1111,9 +1111,9 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock popLocalVar(String arg){
+    public CodeBlock popLocalVar(String arg) {
         int slot = localVariables.indexOf(arg);
-        aload(slot);
+        aload(arity() + slot);
         return this;
     }
 
