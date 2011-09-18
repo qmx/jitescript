@@ -57,16 +57,26 @@ public class CodeBlock implements Opcodes {
     private InsnList instructionList = new InsnList();
     private List<TryCatchBlockNode> tryCatchBlockList = new ArrayList<TryCatchBlockNode>();
     private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
+    private int arity = 0;
 
     public CodeBlock() {
     }
 
     public CodeBlock(CodeBlock block) {
+        this.arity = block.arity();
         prepend(block);
+    }
+
+    public CodeBlock(int arity) {
+        this.arity = arity;
     }
 
     public static CodeBlock newCodeBlock() {
         return new CodeBlock();
+    }
+
+    public static CodeBlock newCodeBlock(int arity) {
+        return new CodeBlock(arity);
     }
 
     public static CodeBlock newCodeBlock(CodeBlock block) {
@@ -1090,5 +1100,9 @@ public class CodeBlock implements Opcodes {
     public CodeBlock append(CodeBlock codeBlock) {
         this.getInstructionList().add(codeBlock.getInstructionList());
         return this;
+    }
+
+    public int arity() {
+        return this.arity;
     }
 }
