@@ -1127,7 +1127,7 @@ public class CodeBlock implements Opcodes {
         return localVariables;
     }
 
-    public boolean returnsre() {
+    public boolean returns() {
         return returns;
     }
 }
