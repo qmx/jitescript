@@ -59,6 +59,7 @@ public class CodeBlock implements Opcodes {
     private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
     private List<String> localVariables = new ArrayList<String>();
     private int arity = 0;
+    private boolean returns = false;
 
     public CodeBlock() {
     }
@@ -249,6 +250,7 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock areturn() {
+        this.returns = true;
         this.instructionList.add(new InsnNode(ARETURN));
         return this;
     }
@@ -1123,5 +1125,9 @@ public class CodeBlock implements Opcodes {
 
     public List<String> getLocalVariables() {
         return localVariables;
+    }
+
+    public boolean itReturns() {
+        return returns;
     }
 }
