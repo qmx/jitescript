@@ -1097,11 +1097,17 @@ public class CodeBlock implements Opcodes {
     }
 
     public CodeBlock prepend(CodeBlock codeBlock) {
+        if (codeBlock.returns()) {
+            this.returns = true;
+        }
         this.getInstructionList().insert(codeBlock.getInstructionList());
         return this;
     }
 
     public CodeBlock append(CodeBlock codeBlock) {
+        if (codeBlock.returns()) {
+            this.returns = true;
+        }
         this.getInstructionList().add(codeBlock.getInstructionList());
         return this;
     }
