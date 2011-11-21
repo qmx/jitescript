@@ -1113,8 +1113,8 @@ public class CodeBlock implements Opcodes {
     public int arity() {
         return this.arity;
     }
-    }
 
     public boolean returns() {
         return returns;
+    }
 }
