@@ -1113,12 +1113,8 @@ public class CodeBlock implements Opcodes {
     public int arity() {
         return this.arity;
     }
-
-    public List<String> getLocalVariables() {
-        return localVariables;
     }
 
     public boolean returns() {
         return returns;
-    }
 }
