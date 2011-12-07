@@ -54,6 +54,10 @@ public class JiteClass implements Opcodes {
         }
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     public void defineMethod(String methodName, int modifiers, String signature, CodeBlock methodBody) {
         this.methods.add(new MethodDefinition(methodName, modifiers, signature, methodBody));
     }

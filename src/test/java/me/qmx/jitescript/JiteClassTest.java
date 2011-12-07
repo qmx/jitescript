@@ -34,9 +34,9 @@ import static org.junit.Assert.assertTrue;
 public class JiteClassTest {
 
     public static class DynamicClassLoader extends ClassLoader {
-
-        public Class<?> define(String className, byte[] bytecode) {
-            return super.defineClass(className, bytecode, 0, bytecode.length);
+        public Class<?> define(JiteClass jiteClass) {
+            byte[] classBytes = jiteClass.toBytes();
+            return super.defineClass(jiteClass.getClassName(), classBytes, 0, classBytes.length);
         }
     }
 
@@ -61,7 +61,7 @@ public class JiteClassTest {
 
         }};
 
-        Class<?> clazz = loadClassFromBytes(className, jiteClass);
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Method helloMethod = clazz.getMethod("hello");
         Object result = helloMethod.invoke(null);
         Assert.assertEquals("helloWorld", result);
@@ -69,13 +69,6 @@ public class JiteClassTest {
         Method mainMethod = clazz.getMethod("main", String[].class);
         mainMethod.invoke(null, (Object) new String[]{});
 
-    }
-
-    private Class<?> loadClassFromBytes(String className, JiteClass jiteClass) {
-        byte[] classBytes = jiteClass.toBytes();
-
-        DynamicClassLoader loader = new DynamicClassLoader();
-        return loader.define(className, classBytes);
     }
 
     @Test
@@ -93,7 +86,7 @@ public class JiteClassTest {
             );
         }};
 
-        Class<?> clazz = loadClassFromBytes(className, jiteClass);
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Object o = clazz.newInstance();
         assertTrue(o instanceof Runnable);
     }
@@ -109,7 +102,7 @@ public class JiteClassTest {
         JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {{
             defineDefaultConstructor();
         }};
-        Class<?> clazz = loadClassFromBytes(className, jiteClass);
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Object o = clazz.newInstance();
         assertTrue(o instanceof LOL);
     }
