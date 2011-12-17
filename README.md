@@ -6,9 +6,15 @@ so that bytescript generation can be as nice in Java as BiteScript makes it in J
 
 ![cloudbees rocks!](http://static-www.cloudbees.com/images/badges/BuiltOnDEV.png)
 
-Requirements
+Quickstart
 ==================================
 
-You must download asm-jar from http://forge.ow2.org/projects/asm/ version 4.0_RC1 and manually install with maven
+Just add the project maven dependency info:
 
-> mvn install:install-file -Dfile=asm-all-4.0_RC1.jar -DgroupId=asm -DartifactId=asm-all -Dversion=4.0_RC1 -Dpackaging=jar
+    <dependency>
+      <groupId>me.qmx.jitescript</groupId>
+      <artifactId>jitescript</artifactId>
+      <version>0.2.1-SNAPSHOT</version>
+    </dependency>
+
+Then take a look at [JiteClassTest](https://github.com/qmx/jitescript/blob/master/src/test/java/me/qmx/jitescript/JiteClassTest.java) example on how to use it.
