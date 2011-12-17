@@ -18,3 +18,7 @@ Just add the project maven dependency info:
     </dependency>
 
 Then take a look at [JiteClassTest](https://github.com/qmx/jitescript/blob/master/src/test/java/me/qmx/jitescript/JiteClassTest.java) example on how to use it.
+
+How to get help
+===============
+I usually hang on `#jitescript` channel at irc.freenode.net.
