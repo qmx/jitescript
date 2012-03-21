@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -26,6 +27,7 @@ import static me.qmx.jitescript.CodeBlock.newCodeBlock;
 import static me.qmx.jitescript.util.CodegenUtils.ci;
 import static me.qmx.jitescript.util.CodegenUtils.p;
 import static me.qmx.jitescript.util.CodegenUtils.sig;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -105,5 +107,18 @@ public class JiteClassTest {
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Object o = clazz.newInstance();
         assertTrue(o instanceof LOL);
+    }
+
+    @Test
+    public void testFields() throws Exception {
+        JiteClass jiteClass = new JiteClass("testFields", p(Object.class), new String[0]) {{
+            defineField("foo", ACC_PUBLIC | ACC_STATIC, ci(String.class), "bar");
+        }};
+
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
+        Field foo = clazz.getDeclaredField("foo");
+        
+        assertEquals("foo field was not a string", String.class, foo.getType());
+        assertEquals("foo field was not set to 'bar'", "bar", foo.get(null));
     }
 }
