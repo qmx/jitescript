@@ -35,6 +35,7 @@ public class JiteClass implements Opcodes {
 
     public static final String[] INTERFACES = new String[]{};
     private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
+    private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
     private final List<String> interfaces = new ArrayList<String>();
     private final String className;
     private final String superClassName;
@@ -90,6 +91,18 @@ public class JiteClass implements Opcodes {
     }
 
     /**
+     * Defines a new field on the target class
+     *
+     * @param fieldName the field name
+     * @param modifiers  the modifier bitmask, made by OR'ing constants from ASM's {@link Opcodes} interface
+     * @param signature  the field signature, on standard JVM notation
+     * @param value the default value (null for JVM default)
+     */
+    public void defineField(String fieldName, int modifiers, String signature, Object value) {
+        this.fields.add(new FieldDefinition(fieldName, modifiers, signature, value));
+    }
+
+    /**
      * Defines a default constructor on the target class
      */
     public void defineDefaultConstructor() {
@@ -129,6 +142,11 @@ public class JiteClass implements Opcodes {
         for (MethodDefinition def : methods) {
             node.methods.add(def.getMethodNode());
         }
+
+        for (FieldDefinition def : fields) {
+            node.fields.add(def.getFieldNode());
+        }
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         node.accept(cw);
         return cw.toByteArray();
