@@ -27,6 +27,8 @@ import static me.qmx.jitescript.util.CodegenUtils.p;
 import static me.qmx.jitescript.util.CodegenUtils.sig;
 
 /**
+ * Represents a Java Class
+ *
  * @author qmx
  */
 public class JiteClass implements Opcodes {
@@ -37,14 +39,32 @@ public class JiteClass implements Opcodes {
     private final String className;
     private final String superClassName;
 
+    /**
+     * Creates a new class representation
+     *
+     * @param className the desired class name
+     */
     public JiteClass(String className) {
         this(className, INTERFACES);
     }
 
+    /**
+     * Creates a new class representation
+     *
+     * @param className  the desired class name
+     * @param interfaces the desired java interfaces this class will implement
+     */
     public JiteClass(String className, String[] interfaces) {
         this(className, p((Class) Object.class), interfaces);
     }
 
+    /**
+     * Creates a new class representation
+     *
+     * @param className      the desired class name
+     * @param superClassName the desired parent class
+     * @param interfaces     the desired java interfaces this class will implement
+     */
     public JiteClass(String className, String superClassName, String[] interfaces) {
         this.className = className;
         this.superClassName = superClassName;
@@ -57,10 +77,21 @@ public class JiteClass implements Opcodes {
         return className;
     }
 
+    /**
+     * Defines a new method on the target class
+     *
+     * @param methodName the method name
+     * @param modifiers  the modifier bitmask, made by OR'ing constants from ASM's {@link Opcodes} interface
+     * @param signature  the method signature, on standard JVM notation
+     * @param methodBody the method body
+     */
     public void defineMethod(String methodName, int modifiers, String signature, CodeBlock methodBody) {
         this.methods.add(new MethodDefinition(methodName, modifiers, signature, methodBody));
     }
 
+    /**
+     * Defines a default constructor on the target class
+     */
     public void defineDefaultConstructor() {
         defineMethod("<init>", ACC_PUBLIC, sig(void.class),
                 newCodeBlock()
@@ -70,10 +101,21 @@ public class JiteClass implements Opcodes {
         );
     }
 
+    /**
+     * Convert this class representation to JDK bytecode
+     *
+     * @return the bytecode representation
+     */
     public byte[] toBytes() {
         return toBytes(JDKVersion.V1_6);
     }
 
+    /**
+     * Convert this class representation to JDK bytecode
+     *
+     * @param version the desired JDK version
+     * @return the bytecode representation of this class
+     */
     public byte[] toBytes(JDKVersion version) {
         ClassNode node = new ClassNode();
         node.version = version.getVer();
