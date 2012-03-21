@@ -6,3 +6,4 @@ build
 *.iws
 /target/
 /nb-configuration.xml
+/.idea/
