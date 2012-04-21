@@ -109,7 +109,7 @@ public class JiteClass implements Opcodes {
         defineMethod("<init>", ACC_PUBLIC, sig(void.class),
                 newCodeBlock()
                         .aload(0)
-                        .invokespecial(p(Object.class), "<init>", sig(void.class))
+                        .invokespecial(superClassName, "<init>", sig(void.class))
                         .voidreturn()
         );
     }
