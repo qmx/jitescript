@@ -109,6 +109,23 @@ public class JiteClassTest {
         assertTrue(o instanceof LOL);
     }
 
+    public static class NondefaultConstructor {
+        public String foo = "hello";
+    }
+
+    @Test
+    public void superclassHashNondefaultConstructor() throws IllegalAccessException, InstantiationException {
+        String className = "Sub";
+        String superClass = p(NondefaultConstructor.class);
+        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {{
+            defineDefaultConstructor();
+        }};
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
+        NondefaultConstructor o = (NondefaultConstructor)clazz.newInstance();
+
+        assertEquals("hello", o.foo);
+    }
+
     @Test
     public void testFields() throws Exception {
         JiteClass jiteClass = new JiteClass("testFields", p(Object.class), new String[0]) {{
