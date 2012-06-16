@@ -1093,6 +1093,11 @@ public class CodeBlock implements Opcodes {
         return localVariableList;
     }
 
+    /**
+     * adds a compressed frame to the stack
+     *
+     * @param stackArguments the argument types on the stack, represented as "class path names" e.g java/lang/RuntimeException
+     */
     public CodeBlock frame_same(Object... stackArguments) {
         int type;
         if (stackArguments.length == 0) {
