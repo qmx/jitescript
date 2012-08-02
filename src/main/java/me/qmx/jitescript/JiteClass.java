@@ -39,6 +39,8 @@ public class JiteClass implements Opcodes {
     private final List<String> interfaces = new ArrayList<String>();
     private final String className;
     private final String superClassName;
+    private String sourceFile;
+    private String sourceDebug;
 
     /**
      * Creates a new class representation
@@ -76,6 +78,14 @@ public class JiteClass implements Opcodes {
 
     public String getClassName() {
         return className;
+    }
+    
+    public void setSourceFile(String sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+    
+    public void setSourceDebug(String sourceDebug) {
+        this.sourceDebug = sourceDebug;
     }
 
     /**
@@ -135,6 +145,8 @@ public class JiteClass implements Opcodes {
         node.access = ACC_PUBLIC | ACC_SUPER;
         node.name = this.className;
         node.superName = this.superClassName;
+        node.sourceFile = this.sourceFile;
+        node.sourceDebug = this.sourceDebug;
         if (!this.interfaces.isEmpty()) {
             node.interfaces.addAll(this.interfaces);
         }
