@@ -1124,6 +1124,7 @@ public class CodeBlock implements Opcodes {
             this.returns = true;
         }
         this.getInstructionList().add(codeBlock.getInstructionList());
+        this.tryCatchBlockList.addAll( codeBlock.getTryCatchBlockList() );
         return this;
     }
 
