@@ -50,7 +50,7 @@
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm-all</artifactId>
             <version>4.0</version>
             <scope>compile</scope>
         </dependency>
