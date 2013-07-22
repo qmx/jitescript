@@ -14,7 +14,7 @@ Just add the project maven dependency info:
     <dependency>
       <groupId>me.qmx.jitescript</groupId>
       <artifactId>jitescript</artifactId>
-      <version>0.2.1-SNAPSHOT</version>
+      <version>0.3.0</version>
     </dependency>
 
 Then take a look at [JiteClassTest](https://github.com/qmx/jitescript/blob/master/src/test/java/me/qmx/jitescript/JiteClassTest.java) example on how to use it.
