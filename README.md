@@ -21,4 +21,4 @@ Then take a look at [JiteClassTest](https://github.com/qmx/jitescript/blob/maste
 
 How to get help
 ===============
-I usually hang on `#jitescript` channel at irc.freenode.net.
+Join us on `#dynjs` channel at irc.freenode.net.
