@@ -15,16 +15,16 @@
  */
 package me.qmx.jitescript;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static me.qmx.jitescript.CodeBlock.newCodeBlock;
 import static me.qmx.jitescript.util.CodegenUtils.p;
 import static me.qmx.jitescript.util.CodegenUtils.sig;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 
 /**
  * Represents a Java Class
@@ -37,6 +37,7 @@ public class JiteClass implements Opcodes {
     private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
     private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
     private final List<String> interfaces = new ArrayList<String>();
+    private final List<VisibleAnnotation> annotations = new ArrayList<VisibleAnnotation>();
     private final String className;
     private final String superClassName;
     private String sourceFile;
@@ -79,11 +80,11 @@ public class JiteClass implements Opcodes {
     public String getClassName() {
         return className;
     }
-    
+
     public void setSourceFile(String sourceFile) {
         this.sourceFile = sourceFile;
     }
-    
+
     public void setSourceDebug(String sourceDebug) {
         this.sourceDebug = sourceDebug;
     }
@@ -107,9 +108,12 @@ public class JiteClass implements Opcodes {
      * @param modifiers  the modifier bitmask, made by OR'ing constants from ASM's {@link Opcodes} interface
      * @param signature  the field signature, on standard JVM notation
      * @param value the default value (null for JVM default)
+     * @return the new field definition for further modification
      */
-    public void defineField(String fieldName, int modifiers, String signature, Object value) {
-        this.fields.add(new FieldDefinition(fieldName, modifiers, signature, value));
+    public FieldDefinition defineField(String fieldName, int modifiers, String signature, Object value) {
+        FieldDefinition field = new FieldDefinition(fieldName, modifiers, signature, value);
+        this.fields.add(field);
+        return field;
     }
 
     /**
@@ -131,6 +135,10 @@ public class JiteClass implements Opcodes {
      */
     public byte[] toBytes() {
         return toBytes(JDKVersion.V1_6);
+    }
+
+    public void addAnnotation(VisibleAnnotation annotation) {
+        annotations.add(annotation);
     }
 
     /**
@@ -157,6 +165,14 @@ public class JiteClass implements Opcodes {
 
         for (FieldDefinition def : fields) {
             node.fields.add(def.getFieldNode());
+        }
+
+        if (node.visibleAnnotations == null) {
+            node.visibleAnnotations = new ArrayList<AnnotationNode>();
+        }
+
+        for (VisibleAnnotation a : annotations) {
+            node.visibleAnnotations.add(a.getNode());
         }
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
