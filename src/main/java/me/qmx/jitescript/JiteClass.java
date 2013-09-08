@@ -42,6 +42,7 @@ public class JiteClass implements Opcodes {
     private final String superClassName;
     private String sourceFile;
     private String sourceDebug;
+    private int access = ACC_PUBLIC;
 
     /**
      * Creates a new class representation
@@ -79,6 +80,10 @@ public class JiteClass implements Opcodes {
 
     public String getClassName() {
         return className;
+    }
+
+    public void setAccess(int access) {
+        this.access = access;
     }
 
     public void setSourceFile(String sourceFile) {
@@ -150,7 +155,7 @@ public class JiteClass implements Opcodes {
     public byte[] toBytes(JDKVersion version) {
         ClassNode node = new ClassNode();
         node.version = version.getVer();
-        node.access = ACC_PUBLIC | ACC_SUPER;
+        node.access = this.access | ACC_SUPER;
         node.name = this.className;
         node.superName = this.superClassName;
         node.sourceFile = this.sourceFile;
