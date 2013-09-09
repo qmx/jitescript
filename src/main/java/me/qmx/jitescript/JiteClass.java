@@ -38,11 +38,13 @@ public class JiteClass implements Opcodes {
     private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
     private final List<String> interfaces = new ArrayList<String>();
     private final List<VisibleAnnotation> annotations = new ArrayList<VisibleAnnotation>();
+    private final List<ChildEntry> childClasses = new ArrayList<ChildEntry>();
     private final String className;
     private final String superClassName;
     private String sourceFile;
     private String sourceDebug;
     private int access = ACC_PUBLIC;
+    private String parentClassName;
 
     /**
      * Creates a new class representation
@@ -78,12 +80,24 @@ public class JiteClass implements Opcodes {
         }
     }
 
+    public int getAccess() {
+        return access;
+    }
+
     public String getClassName() {
         return className;
     }
 
+    public String getParentClassName() {
+        return parentClassName;
+    }
+
     public void setAccess(int access) {
         this.access = access;
+    }
+
+    public void setParentClassName(String parentClassName) {
+        this.parentClassName = parentClassName;
     }
 
     public void setSourceFile(String sourceFile) {
@@ -92,6 +106,29 @@ public class JiteClass implements Opcodes {
 
     public void setSourceDebug(String sourceDebug) {
         this.sourceDebug = sourceDebug;
+    }
+
+    public void addChildClass(JiteClass child) {
+        String childName = child.getClassName();
+        if (childName.contains("$")) {
+            childName = childName.substring(childName.lastIndexOf('$') + 1);
+        } else {
+            childName = childName.substring(childName.lastIndexOf('/') + 1);
+        }
+        addChildClass(childName.substring(childName.lastIndexOf('$') + 1), child);
+    }
+
+    public void addChildClass(String innerName, JiteClass child) {
+        child.setParentClassName(getClassName());
+        childClasses.add(new ChildEntry(innerName, child));
+    }
+
+    public List<JiteClass> getChildClasses() {
+        List<JiteClass> childClasses = new ArrayList<JiteClass>();
+        for (ChildEntry child : this.childClasses) {
+            childClasses.add(child.getJiteClass());
+        }
+        return childClasses;
     }
 
     /**
@@ -125,11 +162,15 @@ public class JiteClass implements Opcodes {
      * Defines a default constructor on the target class
      */
     public void defineDefaultConstructor() {
-        defineMethod("<init>", ACC_PUBLIC, sig(void.class),
-                newCodeBlock()
-                        .aload(0)
-                        .invokespecial(superClassName, "<init>", sig(void.class))
-                        .voidreturn()
+        defineDefaultConstructor(ACC_PUBLIC);
+    }
+
+    public void defineDefaultConstructor(int access) {
+        defineMethod("<init>", access, sig(void.class),
+            newCodeBlock()
+                .aload(0)
+                .invokespecial(superClassName, "<init>", sig(void.class))
+                .voidreturn()
         );
     }
 
@@ -160,6 +201,15 @@ public class JiteClass implements Opcodes {
         node.superName = this.superClassName;
         node.sourceFile = this.sourceFile;
         node.sourceDebug = this.sourceDebug;
+
+        if (parentClassName != null) {
+            node.visitOuterClass(parentClassName, null, null);
+        }
+
+        for (ChildEntry child : childClasses) {
+            node.visitInnerClass(child.getClassName(), className, child.getInnerName(), child.getAccess());
+        }
+
         if (!this.interfaces.isEmpty()) {
             node.interfaces.addAll(this.interfaces);
         }
@@ -185,4 +235,30 @@ public class JiteClass implements Opcodes {
         return cw.toByteArray();
     }
 
+    private static final class ChildEntry {
+
+        public final String innerName;
+        public final JiteClass jiteClass;
+
+        public ChildEntry(String innerName, JiteClass jiteClass) {
+            this.innerName = innerName;
+            this.jiteClass = jiteClass;
+        }
+
+        public int getAccess() {
+            return jiteClass.getAccess();
+        }
+
+        public String getClassName() {
+            return jiteClass.getClassName();
+        }
+
+        public String getInnerName() {
+            return innerName;
+        }
+
+        public JiteClass getJiteClass() {
+            return jiteClass;
+        }
+    }
 }
