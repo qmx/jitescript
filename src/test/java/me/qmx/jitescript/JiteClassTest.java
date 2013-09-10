@@ -15,20 +15,21 @@
  */
 package me.qmx.jitescript;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static me.qmx.jitescript.CodeBlock.newCodeBlock;
+import static me.qmx.jitescript.util.CodegenUtils.c;
+import static me.qmx.jitescript.util.CodegenUtils.ci;
+import static me.qmx.jitescript.util.CodegenUtils.p;
+import static me.qmx.jitescript.util.CodegenUtils.sig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static me.qmx.jitescript.CodeBlock.newCodeBlock;
-import static me.qmx.jitescript.util.CodegenUtils.ci;
-import static me.qmx.jitescript.util.CodegenUtils.p;
-import static me.qmx.jitescript.util.CodegenUtils.sig;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author qmx
@@ -38,7 +39,7 @@ public class JiteClassTest {
     public static class DynamicClassLoader extends ClassLoader {
         public Class<?> define(JiteClass jiteClass) {
             byte[] classBytes = jiteClass.toBytes();
-            return super.defineClass(jiteClass.getClassName(), classBytes, 0, classBytes.length);
+            return super.defineClass(c(jiteClass.getClassName()), classBytes, 0, classBytes.length);
         }
     }
 
@@ -134,8 +135,52 @@ public class JiteClassTest {
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Field foo = clazz.getDeclaredField("foo");
-        
+
         assertEquals("foo field was not a string", String.class, foo.getType());
         assertEquals("foo field was not set to 'bar'", "bar", foo.get(null));
+    }
+
+    @Test(expected = IllegalAccessException.class)
+    public void testPrivateClass() throws Exception {
+        JiteClass jiteClass = new JiteClass("Test", new String[0]) {{
+            setAccess(ACC_PRIVATE);
+            defineDefaultConstructor();
+        }};
+
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
+
+        clazz.newInstance();
+    }
+
+    @Test(expected = IllegalAccessException.class)
+    public void testPrivateConstructor() throws Exception {
+        JiteClass jiteClass = new JiteClass("Test", new String[0]) {{
+            defineDefaultConstructor(ACC_PRIVATE);
+        }};
+
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
+
+        clazz.newInstance();
+    }
+
+    @Test
+    public void testPrivateInnerClass() throws Exception {
+        JiteClass parent = new JiteClass("test/Parent") {{
+            setAccess(ACC_PUBLIC);
+            defineDefaultConstructor();
+            addChildClass(new JiteClass(getClassName() + "$Child") {{
+                setAccess(ACC_PRIVATE);
+                defineDefaultConstructor();
+            }});
+        }};
+
+        DynamicClassLoader classLoader = new DynamicClassLoader();
+        Class<?> parentClazz = classLoader.define(parent);
+
+        for (JiteClass child : parent.getChildClasses()) {
+            Class<?> childClazz = classLoader.define(child);
+            assertEquals(childClazz.getEnclosingClass(), parentClazz);
+            assertFalse(childClazz.getConstructor(new Class[0]).isAccessible());
+        }
     }
 }
