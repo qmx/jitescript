@@ -630,6 +630,11 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
+    public CodeBlock if_icmpge(LabelNode arg0) {
+        this.instructionList.add(new JumpInsnNode(IF_ICMPGE, arg0));
+        return this;
+    }
+
     public CodeBlock checkcast(String arg0) {
         this.instructionList.add(new TypeInsnNode(CHECKCAST, arg0));
         return this;
