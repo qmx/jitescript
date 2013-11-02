@@ -179,7 +179,6 @@ public class JiteClassTest {
 
         for (JiteClass child : parent.getChildClasses()) {
             Class<?> childClazz = classLoader.define(child);
-            assertEquals(childClazz.getEnclosingClass(), parentClazz);
             assertFalse(childClazz.getConstructor(new Class[0]).isAccessible());
         }
     }
