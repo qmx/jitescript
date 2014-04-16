@@ -3,7 +3,7 @@
 
     <groupId>me.qmx.jitescript</groupId>
     <artifactId>jitescript</artifactId>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>jitescript</name>
