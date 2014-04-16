@@ -3,7 +3,7 @@
 
     <groupId>me.qmx.jitescript</groupId>
     <artifactId>jitescript</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>jitescript</name>
@@ -32,7 +32,7 @@
         <connection>scm:git:git@github.com:qmx/jitescript.git</connection>
         <developerConnection>scm:git:git@github.com:qmx/jitescript.git</developerConnection>
         <url>git@github.com:qmx/jitescript.git</url>
-      <tag>v0.4.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <developers>
