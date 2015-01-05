@@ -15,134 +15,175 @@
  */
 package me.qmx.jitescript;
 
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FrameNode;
+import org.objectweb.asm.tree.IincInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.InvokeDynamicInsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.LookupSwitchInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MultiANewArrayInsnNode;
+import org.objectweb.asm.tree.TableSwitchInsnNode;
+import org.objectweb.asm.tree.TryCatchBlockNode;
+import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import static me.qmx.jitescript.util.CodegenUtils.ci;
 import static me.qmx.jitescript.util.CodegenUtils.p;
 import static me.qmx.jitescript.util.CodegenUtils.params;
 import static me.qmx.jitescript.util.CodegenUtils.sig;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import org.objectweb.asm.Handle;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
-
 /**
  * @author qmx
  */
 public class CodeBlock implements Opcodes {
-
-    private boolean DEBUG = false;
-    private InsnList instructionList = new InsnList();
-    private List<TryCatchBlockNode> tryCatchBlockList = new ArrayList<TryCatchBlockNode>();
-    private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
-    private List<VisibleAnnotation> annotations = new ArrayList<VisibleAnnotation>();
+    private final InsnList instructionList = new InsnList();
+    private final List<TryCatchBlockNode> tryCatchBlockList
+        = new ArrayList<TryCatchBlockNode>();
+    private final List<LocalVariableNode> localVariableList
+        = new ArrayList<LocalVariableNode>();
+    private final List<VisibleAnnotation> annotations
+        = new ArrayList<VisibleAnnotation>();
     private int arity = 0;
     private boolean returns = false;
 
-    public CodeBlock() {
+    public CodeBlock()
+    {
     }
 
-    public CodeBlock(CodeBlock block) {
-        this.arity = block.arity();
+    public CodeBlock(final CodeBlock block)
+    {
+        arity = block.arity();
         prepend(block);
     }
 
-    public CodeBlock(int arity) {
+    public CodeBlock(final int arity)
+    {
         this.arity = arity;
     }
 
-    public static CodeBlock newCodeBlock() {
+    public static CodeBlock newCodeBlock()
+    {
         return new CodeBlock();
     }
 
-    public static CodeBlock newCodeBlock(int arity) {
+    public static CodeBlock newCodeBlock(final int arity)
+    {
         return new CodeBlock(arity);
     }
 
-    public static CodeBlock newCodeBlock(CodeBlock block) {
+    public static CodeBlock newCodeBlock(final CodeBlock block)
+    {
         return new CodeBlock(block);
     }
 
     /**
      * Short-hand for specifying a set of aloads
      *
-     * @param args list of aloads you want
+     * @param indices list of aloads you want
      */
-    public CodeBlock aloadMany(int... args) {
-        for (int arg : args) {
-            aload(arg);
-        }
+    public CodeBlock aloadMany(final int... indices)
+    {
+        for (final int index: indices)
+            aload(index);
+
         return this;
     }
 
-    public CodeBlock aload(int arg0) {
-        this.instructionList.add(new VarInsnNode(ALOAD, arg0));
+    public CodeBlock aload(final int index)
+    {
+        instructionList.add(new VarInsnNode(ALOAD, index));
         return this;
     }
 
-    public CodeBlock iload(int arg0) {
-        this.instructionList.add(new VarInsnNode(ILOAD, arg0));
+    public CodeBlock iload(final int index)
+    {
+        instructionList.add(new VarInsnNode(ILOAD, index));
         return this;
     }
 
-    public CodeBlock lload(int arg0) {
-        this.instructionList.add(new VarInsnNode(LLOAD, arg0));
+    public CodeBlock lload(final int index)
+    {
+        instructionList.add(new VarInsnNode(LLOAD, index));
         return this;
     }
 
-    public CodeBlock fload(int arg0) {
-        this.instructionList.add(new VarInsnNode(FLOAD, arg0));
+    public CodeBlock fload(final int index)
+    {
+        instructionList.add(new VarInsnNode(FLOAD, index));
         return this;
     }
 
-    public CodeBlock dload(int arg0) {
-        this.instructionList.add(new VarInsnNode(DLOAD, arg0));
+    public CodeBlock dload(final int index)
+    {
+        instructionList.add(new VarInsnNode(DLOAD, index));
         return this;
     }
 
-    public CodeBlock astore(int arg0) {
-        this.instructionList.add(new VarInsnNode(ASTORE, arg0));
+    public CodeBlock astore(final int index)
+    {
+        instructionList.add(new VarInsnNode(ASTORE, index));
         return this;
     }
 
-    public CodeBlock istore(int arg0) {
-        this.instructionList.add(new VarInsnNode(ISTORE, arg0));
+    public CodeBlock istore(final int index)
+    {
+        instructionList.add(new VarInsnNode(ISTORE, index));
         return this;
     }
 
-    public CodeBlock lstore(int arg0) {
-        this.instructionList.add(new VarInsnNode(LSTORE, arg0));
+    public CodeBlock lstore(final int index)
+    {
+        instructionList.add(new VarInsnNode(LSTORE, index));
         return this;
     }
 
-    public CodeBlock fstore(int arg0) {
-        this.instructionList.add(new VarInsnNode(FSTORE, arg0));
+    public CodeBlock fstore(final int index)
+    {
+        instructionList.add(new VarInsnNode(FSTORE, index));
         return this;
     }
 
-    public CodeBlock dstore(int arg0) {
-        this.instructionList.add(new VarInsnNode(DSTORE, arg0));
+    public CodeBlock dstore(final int index)
+    {
+        instructionList.add(new VarInsnNode(DSTORE, index));
         return this;
     }
 
-    public CodeBlock ldc(Object arg0) {
-        this.instructionList.add(new LdcInsnNode(arg0));
+    public CodeBlock ldc(final Object value)
+    {
+        instructionList.add(new LdcInsnNode(value));
         return this;
     }
 
-    public CodeBlock bipush(int arg) {
-        this.instructionList.add(new IntInsnNode(BIPUSH, arg));
+    public CodeBlock bipush(final int byteValue)
+    {
+        instructionList.add(new IntInsnNode(BIPUSH, byteValue));
         return this;
     }
 
-    public CodeBlock sipush(int arg) {
-        this.instructionList.add(new IntInsnNode(SIPUSH, arg));
+    public CodeBlock sipush(final int shortValue)
+    {
+        instructionList.add(new IntInsnNode(SIPUSH, shortValue));
         return this;
     }
 
-    public CodeBlock pushInt(int value) {
+    public CodeBlock pushInt(final int value)
+    {
         if (value <= Byte.MAX_VALUE && value >= Byte.MIN_VALUE) {
             switch (value) {
                 case -1:
@@ -178,375 +219,464 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock pushBoolean(boolean bool) {
-        if (bool) {
+    public CodeBlock pushBoolean(final boolean bool)
+    {
+        if (bool)
             iconst_1();
-        } else {
+        else
             iconst_0();
-        }
+
         return this;
     }
 
-    public CodeBlock invokestatic(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new MethodInsnNode(INVOKESTATIC, arg1, arg2, arg3));
+    public CodeBlock invokestatic(final String className,
+        final String methodName, final String methodDesc)
+    {
+        instructionList.add(new MethodInsnNode(INVOKESTATIC, className,
+            methodName, methodDesc, false));
         return this;
     }
 
-    public CodeBlock invokespecial(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new MethodInsnNode(INVOKESPECIAL, arg1, arg2, arg3));
+    public CodeBlock invokespecial(final String className,
+        final String methodName, final String methodDesc)
+    {
+        instructionList.add(new MethodInsnNode(INVOKESPECIAL, className,
+            methodName, methodDesc, false));
         return this;
     }
 
-    public CodeBlock invokevirtual(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new MethodInsnNode(INVOKEVIRTUAL, arg1, arg2, arg3));
+    public CodeBlock invokevirtual(final String className,
+        final String methodName, final String methodDesc)
+    {
+        instructionList.add(new MethodInsnNode(INVOKEVIRTUAL, className,
+            methodName, methodDesc, false));
         return this;
     }
 
-    public CodeBlock invokeinterface(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new MethodInsnNode(INVOKEINTERFACE, arg1, arg2, arg3));
+    public CodeBlock invokeinterface(final String className,
+        final String methodName, final String methodDesc)
+    {
+        instructionList.add(new MethodInsnNode(INVOKEINTERFACE, className,
+            methodName, methodDesc, true));
         return this;
     }
 
-    public CodeBlock invokedynamic(String arg0, String arg1, Handle arg2, Object... arg3) {
-        this.instructionList.add(new InvokeDynamicInsnNode(arg0, arg1, arg2, arg3));
+    public CodeBlock invokedynamic(final String name, final String descriptor,
+        final Handle bootstrapMethod, final Object... bootstrapArguments)
+    {
+        instructionList.add(new InvokeDynamicInsnNode(name, descriptor,
+            bootstrapMethod, bootstrapArguments));
         return this;
     }
 
-    public CodeBlock aprintln() {
+    public CodeBlock aprintln()
+    {
         dup();
         getstatic(p(System.class), "out", ci(PrintStream.class));
         swap();
-        invokevirtual(p(PrintStream.class), "println", sig(void.class, params(Object.class)));
+        invokevirtual(p(PrintStream.class), "println", sig(void.class, params(
+            Object.class)));
         return this;
     }
 
-    public CodeBlock iprintln() {
+    public CodeBlock iprintln()
+    {
         dup();
         getstatic(p(System.class), "out", ci(PrintStream.class));
         swap();
-        invokevirtual(p(PrintStream.class), "println", sig(void.class, params(int.class)));
+        invokevirtual(p(PrintStream.class), "println", sig(void.class, params(
+            int.class)));
         return this;
     }
 
-    public CodeBlock areturn() {
-        this.returns = true;
-        this.instructionList.add(new InsnNode(ARETURN));
+    public CodeBlock areturn()
+    {
+        returns = true;
+        instructionList.add(new InsnNode(ARETURN));
         return this;
     }
 
-    public CodeBlock ireturn() {
-        this.returns = true;
-        this.instructionList.add(new InsnNode(IRETURN));
+    public CodeBlock ireturn()
+    {
+        instructionList.add(new InsnNode(IRETURN));
         return this;
     }
 
-    public CodeBlock freturn() {
-        this.returns = true;
-        this.instructionList.add(new InsnNode(FRETURN));
+    public CodeBlock freturn()
+    {
+        instructionList.add(new InsnNode(FRETURN));
         return this;
     }
 
-    public CodeBlock lreturn() {
-        this.returns = true;
-        this.instructionList.add(new InsnNode(LRETURN));
+    public CodeBlock lreturn()
+    {
+        instructionList.add(new InsnNode(LRETURN));
         return this;
     }
 
-    public CodeBlock dreturn() {
-        this.returns = true;
-        this.instructionList.add(new InsnNode(DRETURN));
+    public CodeBlock dreturn()
+    {
+        instructionList.add(new InsnNode(DRETURN));
         return this;
     }
 
-    public CodeBlock newobj(String arg0) {
-        this.instructionList.add(new TypeInsnNode(NEW, arg0));
+    public CodeBlock newobj(final String desc)
+    {
+        instructionList.add(new TypeInsnNode(NEW, desc));
         return this;
     }
 
-    public CodeBlock dup() {
-        this.instructionList.add(new InsnNode(DUP));
+    public CodeBlock dup()
+    {
+        instructionList.add(new InsnNode(DUP));
         return this;
     }
 
-    public CodeBlock swap() {
-        this.instructionList.add(new InsnNode(SWAP));
+    public CodeBlock swap()
+    {
+        instructionList.add(new InsnNode(SWAP));
         return this;
     }
 
-    public CodeBlock swap2() {
+    public CodeBlock swap2()
+    {
         dup2_x2();
         pop2();
         return this;
     }
 
-    public CodeBlock getstatic(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new FieldInsnNode(GETSTATIC, arg1, arg2, arg3));
+    public CodeBlock getstatic(final String className, final String fieldName,
+        final String fieldDesc)
+    {
+        instructionList.add(new FieldInsnNode(GETSTATIC, className, fieldName,
+            fieldDesc));
         return this;
     }
 
-    public CodeBlock putstatic(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new FieldInsnNode(PUTSTATIC, arg1, arg2, arg3));
+    public CodeBlock putstatic(final String className, final String fieldName,
+        final String fieldDesc)
+    {
+        instructionList.add(new FieldInsnNode(PUTSTATIC, className, fieldName,
+            fieldDesc));
         return this;
     }
 
-    public CodeBlock getfield(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new FieldInsnNode(GETFIELD, arg1, arg2, arg3));
+    public CodeBlock getfield(final String className, final String fieldName,
+        final String fieldDesc)
+    {
+        instructionList.add(new FieldInsnNode(GETFIELD, className, fieldName,
+            fieldDesc));
         return this;
     }
 
-    public CodeBlock putfield(String arg1, String arg2, String arg3) {
-        this.instructionList.add(new FieldInsnNode(PUTFIELD, arg1, arg2, arg3));
+    public CodeBlock putfield(final String className, final String fieldName,
+        final String fieldDesc)
+    {
+        instructionList.add(new FieldInsnNode(PUTFIELD, className, fieldName,
+            fieldDesc));
         return this;
     }
 
-    public CodeBlock voidreturn() {
-        this.instructionList.add(new InsnNode(RETURN));
+    public CodeBlock voidreturn()
+    {
+        instructionList.add(new InsnNode(RETURN));
         return this;
     }
 
-    public CodeBlock anewarray(String arg0) {
-        this.instructionList.add(new TypeInsnNode(ANEWARRAY, arg0));
+    public CodeBlock anewarray(final String arrayDesc)
+    {
+        instructionList.add(new TypeInsnNode(ANEWARRAY, arrayDesc));
         return this;
     }
 
-    public CodeBlock multianewarray(String arg0, int dims) {
-        this.instructionList.add(new MultiANewArrayInsnNode(arg0, dims));
+    public CodeBlock multianewarray(final String arrayDesc, final int dims)
+    {
+        instructionList.add(new MultiANewArrayInsnNode(arrayDesc, dims));
         return this;
     }
 
-    public CodeBlock newarray(int arg0) {
-        this.instructionList.add(new IntInsnNode(NEWARRAY, arg0));
+    public CodeBlock newarray(final int size)
+    {
+        instructionList.add(new IntInsnNode(NEWARRAY, size));
         return this;
     }
 
-    public CodeBlock iconst_m1() {
-        this.instructionList.add(new InsnNode(ICONST_M1));
+    public CodeBlock iconst_m1()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_M1));
         return this;
     }
 
-    public CodeBlock iconst_0() {
-        this.instructionList.add(new InsnNode(ICONST_0));
+    public CodeBlock iconst_0()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_0));
         return this;
     }
 
-    public CodeBlock iconst_1() {
-        this.instructionList.add(new InsnNode(ICONST_1));
+    public CodeBlock iconst_1()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_1));
         return this;
     }
 
-    public CodeBlock iconst_2() {
-        this.instructionList.add(new InsnNode(ICONST_2));
+    public CodeBlock iconst_2()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_2));
         return this;
     }
 
-    public CodeBlock iconst_3() {
-        this.instructionList.add(new InsnNode(ICONST_3));
+    public CodeBlock iconst_3()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_3));
         return this;
     }
 
-    public CodeBlock iconst_4() {
-        this.instructionList.add(new InsnNode(ICONST_4));
+    public CodeBlock iconst_4()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_4));
         return this;
     }
 
-    public CodeBlock iconst_5() {
-        this.instructionList.add(new InsnNode(ICONST_5));
+    public CodeBlock iconst_5()
+    {
+        instructionList.add(new InsnNode(Opcodes.ICONST_5));
         return this;
     }
 
-    public CodeBlock lconst_0() {
-        this.instructionList.add(new InsnNode(LCONST_0));
+    public CodeBlock lconst_0()
+    {
+        instructionList.add(new InsnNode(Opcodes.LCONST_0));
         return this;
     }
 
-    public CodeBlock aconst_null() {
-        this.instructionList.add(new InsnNode(ACONST_NULL));
+    public CodeBlock aconst_null()
+    {
+        instructionList.add(new InsnNode(Opcodes.ACONST_NULL));
         return this;
     }
 
-    public CodeBlock label(LabelNode labelNode) {
-        this.instructionList.add(labelNode);
+    public CodeBlock label(final LabelNode labelNode)
+    {
+        instructionList.add(labelNode);
         return this;
     }
 
-    public CodeBlock nop() {
-        this.instructionList.add(new InsnNode(NOP));
+    public CodeBlock nop()
+    {
+        instructionList.add(new InsnNode(Opcodes.NOP));
         return this;
     }
 
-    public CodeBlock pop() {
-        this.instructionList.add(new InsnNode(POP));
+    public CodeBlock pop()
+    {
+        instructionList.add(new InsnNode(POP));
         return this;
     }
 
-    public CodeBlock pop2() {
-        this.instructionList.add(new InsnNode(POP2));
+    public CodeBlock pop2()
+    {
+        instructionList.add(new InsnNode(POP2));
         return this;
     }
 
-    public CodeBlock arrayload() {
-        this.instructionList.add(new InsnNode(AALOAD));
+    public CodeBlock arrayload()
+    {
+        instructionList.add(new InsnNode(AALOAD));
         return this;
     }
 
-    public CodeBlock arraystore() {
-        this.instructionList.add(new InsnNode(AASTORE));
+    public CodeBlock arraystore()
+    {
+        instructionList.add(new InsnNode(AASTORE));
         return this;
     }
 
-    public CodeBlock iarrayload() {
-        this.instructionList.add(new InsnNode(IALOAD));
+    public CodeBlock iarrayload()
+    {
+        instructionList.add(new InsnNode(IALOAD));
         return this;
     }
 
-    public CodeBlock barrayload() {
-        this.instructionList.add(new InsnNode(BALOAD));
+    public CodeBlock barrayload()
+    {
+        instructionList.add(new InsnNode(BALOAD));
         return this;
     }
 
-    public CodeBlock barraystore() {
-        this.instructionList.add(new InsnNode(BASTORE));
+    public CodeBlock barraystore()
+    {
+        instructionList.add(new InsnNode(BASTORE));
         return this;
     }
 
-    public CodeBlock aaload() {
-        this.instructionList.add(new InsnNode(AALOAD));
+    public CodeBlock aaload()
+    {
+        instructionList.add(new InsnNode(AALOAD));
         return this;
     }
 
-    public CodeBlock aastore() {
-        this.instructionList.add(new InsnNode(AASTORE));
+    public CodeBlock aastore()
+    {
+        instructionList.add(new InsnNode(AASTORE));
         return this;
     }
 
-    public CodeBlock iaload() {
-        this.instructionList.add(new InsnNode(IALOAD));
+    public CodeBlock iaload()
+    {
+        instructionList.add(new InsnNode(IALOAD));
         return this;
     }
 
-    public CodeBlock iastore() {
-        this.instructionList.add(new InsnNode(IASTORE));
+    public CodeBlock iastore()
+    {
+        instructionList.add(new InsnNode(IASTORE));
         return this;
     }
 
-    public CodeBlock laload() {
-        this.instructionList.add(new InsnNode(LALOAD));
+    public CodeBlock laload()
+    {
+        instructionList.add(new InsnNode(LALOAD));
         return this;
     }
 
-    public CodeBlock lastore() {
-        this.instructionList.add(new InsnNode(LASTORE));
+    public CodeBlock lastore()
+    {
+        instructionList.add(new InsnNode(LASTORE));
         return this;
     }
 
-    public CodeBlock baload() {
-        this.instructionList.add(new InsnNode(BALOAD));
+    public CodeBlock baload()
+    {
+        instructionList.add(new InsnNode(BALOAD));
         return this;
     }
 
-    public CodeBlock bastore() {
-        this.instructionList.add(new InsnNode(BASTORE));
+    public CodeBlock bastore()
+    {
+        instructionList.add(new InsnNode(BASTORE));
         return this;
     }
 
-    public CodeBlock saload() {
-        this.instructionList.add(new InsnNode(SALOAD));
+    public CodeBlock saload()
+    {
+        instructionList.add(new InsnNode(SALOAD));
         return this;
     }
 
-    public CodeBlock sastore() {
-        this.instructionList.add(new InsnNode(SASTORE));
+    public CodeBlock sastore()
+    {
+        instructionList.add(new InsnNode(SASTORE));
         return this;
     }
 
-    public CodeBlock caload() {
-        this.instructionList.add(new InsnNode(CALOAD));
+    public CodeBlock caload()
+    {
+        instructionList.add(new InsnNode(CALOAD));
         return this;
     }
 
-    public CodeBlock castore() {
-        this.instructionList.add(new InsnNode(CASTORE));
+    public CodeBlock castore()
+    {
+        instructionList.add(new InsnNode(CASTORE));
         return this;
     }
 
-    public CodeBlock faload() {
-        this.instructionList.add(new InsnNode(FALOAD));
+    public CodeBlock faload()
+    {
+        instructionList.add(new InsnNode(FALOAD));
         return this;
     }
 
-    public CodeBlock fastore() {
-        this.instructionList.add(new InsnNode(FASTORE));
+    public CodeBlock fastore()
+    {
+        instructionList.add(new InsnNode(FASTORE));
         return this;
     }
 
-    public CodeBlock daload() {
-        this.instructionList.add(new InsnNode(DALOAD));
+    public CodeBlock daload()
+    {
+        instructionList.add(new InsnNode(DALOAD));
         return this;
     }
 
-    public CodeBlock dastore() {
-        this.instructionList.add(new InsnNode(DASTORE));
+    public CodeBlock dastore()
+    {
+        instructionList.add(new InsnNode(DASTORE));
         return this;
     }
 
-    public CodeBlock fcmpl() {
-        this.instructionList.add(new InsnNode(FCMPL));
+    public CodeBlock fcmpl()
+    {
+        instructionList.add(new InsnNode(FCMPL));
         return this;
     }
 
-    public CodeBlock fcmpg() {
-        this.instructionList.add(new InsnNode(FCMPG));
+    public CodeBlock fcmpg()
+    {
+        instructionList.add(new InsnNode(FCMPG));
         return this;
     }
 
-    public CodeBlock dcmpl() {
-        this.instructionList.add(new InsnNode(DCMPL));
+    public CodeBlock dcmpl()
+    {
+        instructionList.add(new InsnNode(DCMPL));
         return this;
     }
 
-    public CodeBlock dcmpg() {
-        this.instructionList.add(new InsnNode(DCMPG));
+    public CodeBlock dcmpg()
+    {
+        instructionList.add(new InsnNode(DCMPG));
         return this;
     }
 
-    public CodeBlock dup_x2() {
-        this.instructionList.add(new InsnNode(DUP_X2));
+    public CodeBlock dup_x2()
+    {
+        instructionList.add(new InsnNode(DUP_X2));
         return this;
     }
 
-    public CodeBlock dup_x1() {
-        this.instructionList.add(new InsnNode(DUP_X1));
+    public CodeBlock dup_x1()
+    {
+        instructionList.add(new InsnNode(DUP_X1));
         return this;
     }
 
-    public CodeBlock dup2_x2() {
-        this.instructionList.add(new InsnNode(DUP2_X2));
+    public CodeBlock dup2_x2()
+    {
+        instructionList.add(new InsnNode(DUP2_X2));
         return this;
     }
 
-    public CodeBlock dup2_x1() {
-        this.instructionList.add(new InsnNode(DUP2_X1));
+    public CodeBlock dup2_x1()
+    {
+        instructionList.add(new InsnNode(DUP2_X1));
         return this;
     }
 
-    public CodeBlock dup2() {
-        this.instructionList.add(new InsnNode(DUP2));
+    public CodeBlock dup2()
+    {
+        instructionList.add(new InsnNode(DUP2));
         return this;
     }
 
-    public CodeBlock trycatch(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                              String arg3) {
-        this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
+    public CodeBlock trycatch(final LabelNode scopeStart,
+        final LabelNode scopeEnd, final LabelNode handler,
+        final String exceptionType)
+    {
+        tryCatchBlockList.add(new TryCatchBlockNode(scopeStart, scopeEnd,
+            handler, exceptionType));
         return this;
     }
 
-    public CodeBlock trycatch(String type, Runnable body, Runnable catchBody) {
-        LabelNode before = new LabelNode();
-        LabelNode after = new LabelNode();
-        LabelNode catchStart = new LabelNode();
-        LabelNode done = new LabelNode();
+    public CodeBlock trycatch(final String exceptionType, final Runnable body,
+        final Runnable catchBody)
+    {
+        final LabelNode before = new LabelNode();
+        final LabelNode after = new LabelNode();
+        final LabelNode catchStart = new LabelNode();
+        final LabelNode done = new LabelNode();
 
-        trycatch(before, after, catchStart, type);
+        trycatch(before, after, catchStart, exceptionType);
         label(before);
         body.run();
         label(after);
@@ -559,588 +689,740 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock go_to(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(GOTO, arg0));
+    public CodeBlock go_to(final LabelNode label)
+    {
+        instructionList.add(new JumpInsnNode(GOTO, label));
         return this;
     }
 
-    public CodeBlock lookupswitch(LabelNode arg0, int[] arg1, LabelNode[] arg2) {
-        this.instructionList.add(new LookupSwitchInsnNode(arg0, arg1, arg2));
+    public CodeBlock lookupswitch(final LabelNode defaultHandler,
+        final int[] keys,
+        final LabelNode[] handlers)
+    {
+        instructionList.add(new LookupSwitchInsnNode(defaultHandler, keys,
+            handlers));
         return this;
     }
 
-    public CodeBlock athrow() {
-        this.instructionList.add(new InsnNode(ATHROW));
+    public CodeBlock athrow()
+    {
+        instructionList.add(new InsnNode(ATHROW));
         return this;
     }
 
-    public CodeBlock instance_of(String arg0) {
-        this.instructionList.add(new TypeInsnNode(INSTANCEOF, arg0));
+    public CodeBlock instance_of(final String typeDesc)
+    {
+        instructionList.add(new TypeInsnNode(INSTANCEOF, typeDesc));
         return this;
     }
 
-    public CodeBlock ifeq(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFEQ, arg0));
+    public CodeBlock ifeq(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFEQ, jumpLabel));
         return this;
     }
 
-    public CodeBlock iffalse(LabelNode arg0) {
-        ifeq(arg0);
+    public CodeBlock iffalse(final LabelNode jumpLabel)
+    {
+        ifeq(jumpLabel);
         return this;
     }
 
-    public CodeBlock ifne(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFNE, arg0));
+    public CodeBlock ifne(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFNE, jumpLabel));
         return this;
     }
 
-    public CodeBlock iftrue(LabelNode arg0) {
-        ifne(arg0);
+    public CodeBlock iftrue(final LabelNode jumpLabel)
+    {
+        ifne(jumpLabel);
         return this;
     }
 
-    public CodeBlock if_acmpne(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ACMPNE, arg0));
+    public CodeBlock if_acmpne(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ACMPNE, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_acmpeq(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ACMPEQ, arg0));
+    public CodeBlock if_acmpeq(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ACMPEQ, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmple(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPLE, arg0));
+    public CodeBlock if_icmple(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPLE, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmpgt(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPGT, arg0));
+    public CodeBlock if_icmpgt(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPGT, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmplt(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPLT, arg0));
+    public CodeBlock if_icmplt(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPLT, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmpne(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPNE, arg0));
+    public CodeBlock if_icmpne(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPNE, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmpeq(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPEQ, arg0));
+    public CodeBlock if_icmpeq(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPEQ, jumpLabel));
         return this;
     }
 
-    public CodeBlock if_icmpge(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IF_ICMPGE, arg0));
+    public CodeBlock if_icmpge(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IF_ICMPGE, jumpLabel));
         return this;
     }
 
-    public CodeBlock checkcast(String arg0) {
-        this.instructionList.add(new TypeInsnNode(CHECKCAST, arg0));
+    public CodeBlock checkcast(final String typeDesc)
+    {
+        instructionList.add(new TypeInsnNode(CHECKCAST, typeDesc));
         return this;
     }
 
-    public CodeBlock line(int line) {
+    public CodeBlock line(final int line)
+    {
         visitLineNumber(line, new LabelNode());
         return this;
     }
 
-    public CodeBlock line(int line, LabelNode label) {
+    public CodeBlock line(final int line, final LabelNode label)
+    {
         visitLineNumber(line, label);
         return this;
     }
 
-    public CodeBlock ifnonnull(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFNONNULL, arg0));
+    public CodeBlock ifnonnull(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFNONNULL, jumpLabel));
         return this;
     }
 
-    public CodeBlock ifnull(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFNULL, arg0));
+    public CodeBlock ifnull(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFNULL, jumpLabel));
         return this;
     }
 
-    public CodeBlock iflt(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFLT, arg0));
+    public CodeBlock iflt(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFLT, jumpLabel));
         return this;
     }
 
-    public CodeBlock ifle(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFLE, arg0));
+    public CodeBlock ifle(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFLE, jumpLabel));
         return this;
     }
 
-    public CodeBlock ifgt(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFGT, arg0));
+    public CodeBlock ifgt(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFGT, jumpLabel));
         return this;
     }
 
-    public CodeBlock ifge(LabelNode arg0) {
-        this.instructionList.add(new JumpInsnNode(IFGE, arg0));
+    public CodeBlock ifge(final LabelNode jumpLabel)
+    {
+        instructionList.add(new JumpInsnNode(IFGE, jumpLabel));
         return this;
     }
 
-    public CodeBlock arraylength() {
-        this.instructionList.add(new InsnNode(ARRAYLENGTH));
+    public CodeBlock arraylength()
+    {
+        instructionList.add(new InsnNode(ARRAYLENGTH));
         return this;
     }
 
-    public CodeBlock ishr() {
-        this.instructionList.add(new InsnNode(ISHR));
+    public CodeBlock ishr()
+    {
+        instructionList.add(new InsnNode(ISHR));
         return this;
     }
 
-    public CodeBlock ishl() {
-        this.instructionList.add(new InsnNode(ISHL));
+    public CodeBlock ishl()
+    {
+        instructionList.add(new InsnNode(ISHL));
         return this;
     }
 
-    public CodeBlock iushr() {
-        this.instructionList.add(new InsnNode(IUSHR));
+    public CodeBlock iushr()
+    {
+        instructionList.add(new InsnNode(IUSHR));
         return this;
     }
 
-    public CodeBlock lshr() {
-        this.instructionList.add(new InsnNode(LSHR));
+    public CodeBlock lshr()
+    {
+        instructionList.add(new InsnNode(LSHR));
         return this;
     }
 
-    public CodeBlock lshl() {
-        this.instructionList.add(new InsnNode(LSHL));
+    public CodeBlock lshl()
+    {
+        instructionList.add(new InsnNode(LSHL));
         return this;
     }
 
-    public CodeBlock lushr() {
-        this.instructionList.add(new InsnNode(LUSHR));
+    public CodeBlock lushr()
+    {
+        instructionList.add(new InsnNode(LUSHR));
         return this;
     }
 
-    public CodeBlock lcmp() {
-        this.instructionList.add(new InsnNode(LCMP));
+    public CodeBlock lcmp()
+    {
+        instructionList.add(new InsnNode(LCMP));
         return this;
     }
 
-    public CodeBlock iand() {
-        this.instructionList.add(new InsnNode(IAND));
+    public CodeBlock iand()
+    {
+        instructionList.add(new InsnNode(IAND));
         return this;
     }
 
-    public CodeBlock ior() {
-        this.instructionList.add(new InsnNode(IOR));
+    public CodeBlock ior()
+    {
+        instructionList.add(new InsnNode(IOR));
         return this;
     }
 
-    public CodeBlock ixor() {
-        this.instructionList.add(new InsnNode(IXOR));
+    public CodeBlock ixor()
+    {
+        instructionList.add(new InsnNode(IXOR));
         return this;
     }
 
-    public CodeBlock land() {
-        this.instructionList.add(new InsnNode(LAND));
+    public CodeBlock land()
+    {
+        instructionList.add(new InsnNode(LAND));
         return this;
     }
 
-    public CodeBlock lor() {
-        this.instructionList.add(new InsnNode(LOR));
+    public CodeBlock lor()
+    {
+        instructionList.add(new InsnNode(LOR));
         return this;
     }
 
-    public CodeBlock lxor() {
-        this.instructionList.add(new InsnNode(LXOR));
+    public CodeBlock lxor()
+    {
+        instructionList.add(new InsnNode(LXOR));
         return this;
     }
 
-    public CodeBlock iadd() {
-        this.instructionList.add(new InsnNode(IADD));
+    public CodeBlock iadd()
+    {
+        instructionList.add(new InsnNode(IADD));
         return this;
     }
 
-    public CodeBlock ladd() {
-        this.instructionList.add(new InsnNode(LADD));
+    public CodeBlock ladd()
+    {
+        instructionList.add(new InsnNode(LADD));
         return this;
     }
 
-    public CodeBlock fadd() {
-        this.instructionList.add(new InsnNode(FADD));
+    public CodeBlock fadd()
+    {
+        instructionList.add(new InsnNode(FADD));
         return this;
     }
 
-    public CodeBlock dadd() {
-        this.instructionList.add(new InsnNode(DADD));
+    public CodeBlock dadd()
+    {
+        instructionList.add(new InsnNode(DADD));
         return this;
     }
 
-    public CodeBlock isub() {
-        this.instructionList.add(new InsnNode(ISUB));
+    public CodeBlock isub()
+    {
+        instructionList.add(new InsnNode(ISUB));
         return this;
     }
 
-    public CodeBlock lsub() {
-        this.instructionList.add(new InsnNode(LSUB));
+    public CodeBlock lsub()
+    {
+        instructionList.add(new InsnNode(LSUB));
         return this;
     }
 
-    public CodeBlock fsub() {
-        this.instructionList.add(new InsnNode(FSUB));
+    public CodeBlock fsub()
+    {
+        instructionList.add(new InsnNode(FSUB));
         return this;
     }
 
-    public CodeBlock dsub() {
-        this.instructionList.add(new InsnNode(DSUB));
+    public CodeBlock dsub()
+    {
+        instructionList.add(new InsnNode(DSUB));
         return this;
     }
 
-    public CodeBlock idiv() {
-        this.instructionList.add(new InsnNode(IDIV));
+    public CodeBlock idiv()
+    {
+        instructionList.add(new InsnNode(IDIV));
         return this;
     }
 
-    public CodeBlock irem() {
-        this.instructionList.add(new InsnNode(IREM));
+    public CodeBlock irem()
+    {
+        instructionList.add(new InsnNode(IREM));
         return this;
     }
 
-    public CodeBlock ineg() {
-        this.instructionList.add(new InsnNode(INEG));
+    public CodeBlock ineg()
+    {
+        instructionList.add(new InsnNode(INEG));
         return this;
     }
 
-    public CodeBlock i2d() {
-        this.instructionList.add(new InsnNode(I2D));
+    public CodeBlock i2d()
+    {
+        instructionList.add(new InsnNode(I2D));
         return this;
     }
 
-    public CodeBlock i2l() {
-        this.instructionList.add(new InsnNode(I2L));
+    public CodeBlock i2l()
+    {
+        instructionList.add(new InsnNode(I2L));
         return this;
     }
 
-    public CodeBlock i2f() {
-        this.instructionList.add(new InsnNode(I2F));
+    public CodeBlock i2f()
+    {
+        instructionList.add(new InsnNode(I2F));
         return this;
     }
 
-    public CodeBlock i2s() {
-        this.instructionList.add(new InsnNode(I2S));
+    public CodeBlock i2s()
+    {
+        instructionList.add(new InsnNode(I2S));
         return this;
     }
 
-    public CodeBlock i2c() {
-        this.instructionList.add(new InsnNode(I2C));
+    public CodeBlock i2c()
+    {
+        instructionList.add(new InsnNode(I2C));
         return this;
     }
 
-    public CodeBlock i2b() {
-        this.instructionList.add(new InsnNode(I2B));
+    public CodeBlock i2b()
+    {
+        instructionList.add(new InsnNode(I2B));
         return this;
     }
 
-    public CodeBlock ldiv() {
-        this.instructionList.add(new InsnNode(LDIV));
+    public CodeBlock ldiv()
+    {
+        instructionList.add(new InsnNode(LDIV));
         return this;
     }
 
-    public CodeBlock lrem() {
-        this.instructionList.add(new InsnNode(LREM));
+    public CodeBlock lrem()
+    {
+        instructionList.add(new InsnNode(LREM));
         return this;
     }
 
-    public CodeBlock lneg() {
-        this.instructionList.add(new InsnNode(LNEG));
+    public CodeBlock lneg()
+    {
+        instructionList.add(new InsnNode(LNEG));
         return this;
     }
 
-    public CodeBlock l2d() {
-        this.instructionList.add(new InsnNode(L2D));
+    public CodeBlock l2d()
+    {
+        instructionList.add(new InsnNode(L2D));
         return this;
     }
 
-    public CodeBlock l2i() {
-        this.instructionList.add(new InsnNode(L2I));
+    public CodeBlock l2i()
+    {
+        instructionList.add(new InsnNode(L2I));
         return this;
     }
 
-    public CodeBlock l2f() {
-        this.instructionList.add(new InsnNode(L2F));
+    public CodeBlock l2f()
+    {
+        instructionList.add(new InsnNode(L2F));
         return this;
     }
 
-    public CodeBlock fdiv() {
-        this.instructionList.add(new InsnNode(FDIV));
+    public CodeBlock fdiv()
+    {
+        instructionList.add(new InsnNode(FDIV));
         return this;
     }
 
-    public CodeBlock frem() {
-        this.instructionList.add(new InsnNode(FREM));
+    public CodeBlock frem()
+    {
+        instructionList.add(new InsnNode(FREM));
         return this;
     }
 
-    public CodeBlock fneg() {
-        this.instructionList.add(new InsnNode(FNEG));
+    public CodeBlock fneg()
+    {
+        instructionList.add(new InsnNode(FNEG));
         return this;
     }
 
-    public CodeBlock f2d() {
-        this.instructionList.add(new InsnNode(F2D));
+    public CodeBlock f2d()
+    {
+        instructionList.add(new InsnNode(F2D));
         return this;
     }
 
-    public CodeBlock f2i() {
-        this.instructionList.add(new InsnNode(F2D));
+    public CodeBlock f2i()
+    {
+        instructionList.add(new InsnNode(F2D));
         return this;
     }
 
-    public CodeBlock f2l() {
-        this.instructionList.add(new InsnNode(F2L));
+    public CodeBlock f2l()
+    {
+        instructionList.add(new InsnNode(F2L));
         return this;
     }
 
-    public CodeBlock ddiv() {
-        this.instructionList.add(new InsnNode(DDIV));
+    public CodeBlock ddiv()
+    {
+        instructionList.add(new InsnNode(DDIV));
         return this;
     }
 
-    public CodeBlock drem() {
-        this.instructionList.add(new InsnNode(DREM));
+    public CodeBlock drem()
+    {
+        instructionList.add(new InsnNode(DREM));
         return this;
     }
 
-    public CodeBlock dneg() {
-        this.instructionList.add(new InsnNode(DNEG));
+    public CodeBlock dneg()
+    {
+        instructionList.add(new InsnNode(DNEG));
         return this;
     }
 
-    public CodeBlock d2f() {
-        this.instructionList.add(new InsnNode(D2F));
+    public CodeBlock d2f()
+    {
+        instructionList.add(new InsnNode(D2F));
         return this;
     }
 
-    public CodeBlock d2i() {
-        this.instructionList.add(new InsnNode(D2I));
+    public CodeBlock d2i()
+    {
+        instructionList.add(new InsnNode(D2I));
         return this;
     }
 
-    public CodeBlock d2l() {
-        this.instructionList.add(new InsnNode(D2L));
+    public CodeBlock d2l()
+    {
+        instructionList.add(new InsnNode(D2L));
         return this;
     }
 
-    public CodeBlock imul() {
-        this.instructionList.add(new InsnNode(IMUL));
+    public CodeBlock imul()
+    {
+        instructionList.add(new InsnNode(IMUL));
         return this;
     }
 
-    public CodeBlock lmul() {
-        this.instructionList.add(new InsnNode(LMUL));
+    public CodeBlock lmul()
+    {
+        instructionList.add(new InsnNode(LMUL));
         return this;
     }
 
-    public CodeBlock fmul() {
-        this.instructionList.add(new InsnNode(FMUL));
+    public CodeBlock fmul()
+    {
+        instructionList.add(new InsnNode(FMUL));
         return this;
     }
 
-    public CodeBlock dmul() {
-        this.instructionList.add(new InsnNode(DMUL));
+    public CodeBlock dmul()
+    {
+        instructionList.add(new InsnNode(DMUL));
         return this;
     }
 
-    public CodeBlock iinc(int arg0, int arg1) {
-        this.instructionList.add(new IincInsnNode(arg0, arg1));
+    public CodeBlock iinc(final int varIndex, final int increment)
+    {
+        instructionList.add(new IincInsnNode(varIndex, increment));
         return this;
     }
 
-    public CodeBlock monitorenter() {
-        this.instructionList.add(new InsnNode(MONITORENTER));
+    public CodeBlock monitorenter()
+    {
+        instructionList.add(new InsnNode(MONITORENTER));
         return this;
     }
 
-    public CodeBlock monitorexit() {
-        this.instructionList.add(new InsnNode(MONITOREXIT));
+    public CodeBlock monitorexit()
+    {
+        instructionList.add(new InsnNode(MONITOREXIT));
         return this;
     }
 
-    public CodeBlock jsr(LabelNode branch) {
-        this.instructionList.add(new JumpInsnNode(JSR, branch));
+    public CodeBlock jsr(final LabelNode branch)
+    {
+        instructionList.add(new JumpInsnNode(JSR, branch));
         return this;
     }
 
-    public CodeBlock ret(int arg0) {
-        this.instructionList.add(new IntInsnNode(RET, arg0));
+    public CodeBlock ret(final int value)
+    {
+        instructionList.add(new IntInsnNode(RET, value));
         return this;
     }
 
-    public CodeBlock visitInsn(int arg0) {
-        this.instructionList.add(new InsnNode(arg0));
+    public CodeBlock visitInsn(final int opcode)
+    {
+        instructionList.add(new InsnNode(opcode));
         return this;
     }
 
-    public CodeBlock visitIntInsn(int arg0, int arg1) {
-        this.instructionList.add(new IntInsnNode(arg0, arg1));
+    public CodeBlock visitIntInsn(final int opcode, final int operand)
+    {
+        instructionList.add(new IntInsnNode(opcode, operand));
         return this;
     }
 
-    public CodeBlock visitInsnNode(int arg0, int arg1) {
-        this.instructionList.add(new IntInsnNode(arg0, arg1));
+    public CodeBlock visitInsnNode(final int opcode, final int operand)
+    {
+        instructionList.add(new IntInsnNode(opcode, operand));
         return this;
     }
 
-    public CodeBlock visitTypeInsn(int arg0, String arg1) {
-        this.instructionList.add(new TypeInsnNode(arg0, arg1));
+    public CodeBlock visitTypeInsn(final int opcode, final String desc)
+    {
+        instructionList.add(new TypeInsnNode(opcode, desc));
         return this;
     }
 
-    public CodeBlock visitFieldInsn(int arg0, String arg1, String arg2, String arg3) {
-        this.instructionList.add(new FieldInsnNode(arg0, arg1, arg2, arg3));
+    public CodeBlock visitFieldInsn(final int opcode, final String className,
+        final String fieldName, final String fieldDesc)
+    {
+        instructionList.add(new FieldInsnNode(opcode, className, fieldName,
+            fieldDesc));
         return this;
     }
 
-    public CodeBlock visitMethodInsn(int arg0, String arg1, String arg2, String arg3) {
-        this.instructionList.add(new MethodInsnNode(arg0, arg1, arg2, arg3));
+    public CodeBlock visitMethodInsn(final int opcode, final String className,
+        final String methodName, final String methodDesc)
+    {
+        final boolean intf = opcode == INVOKEINTERFACE;
+        instructionList.add(new MethodInsnNode(opcode, className, methodName,
+            methodDesc, intf));
         return this;
     }
 
-    public CodeBlock visitInvokeDynamicInsn(String arg0, String arg1, Handle arg2, Object... arg3) {
-        this.instructionList.add(new InvokeDynamicInsnNode(arg0, arg1, arg2, arg3));
+    public CodeBlock visitInvokeDynamicInsn(final String name,
+        final String desc, final Handle bootstrapMethod,
+        final Object... bootstrapArguments)
+    {
+        instructionList.add(new InvokeDynamicInsnNode(name, desc,
+            bootstrapMethod, bootstrapArguments));
         return this;
     }
 
-    public CodeBlock visitJumpInsn(int arg0, LabelNode arg1) {
-        this.instructionList.add(new JumpInsnNode(arg0, arg1));
+    public CodeBlock visitJumpInsn(final int opcode, final LabelNode node)
+    {
+        instructionList.add(new JumpInsnNode(opcode, node));
         return this;
     }
 
-    public CodeBlock visitLabel(Label arg0) {
-        this.instructionList.add(new LabelNode(arg0));
+    public CodeBlock visitLabel(final Label label)
+    {
+        instructionList.add(new LabelNode(label));
         return this;
     }
 
-    public CodeBlock visitLdcInsn(Object arg0) {
-        this.instructionList.add(new LdcInsnNode(arg0));
+    public CodeBlock visitLdcInsn(final Object value)
+    {
+        instructionList.add(new LdcInsnNode(value));
         return this;
     }
 
-    public CodeBlock visitIincInsn(int arg0, int arg1) {
-        this.instructionList.add(new IincInsnNode(arg0, arg1));
+    public CodeBlock visitIincInsn(final int varIndex, final int increment)
+    {
+        instructionList.add(new IincInsnNode(varIndex, increment));
         return this;
     }
 
-    public CodeBlock visitTableSwitchInsn(int arg0, int arg1, LabelNode arg2,
-                                          LabelNode[] arg3) {
-        this.instructionList.add(new TableSwitchInsnNode(arg0, arg1, arg2, arg3));
+    public CodeBlock visitTableSwitchInsn(final int min, final int max,
+        final LabelNode defaultHandler, final LabelNode[] handlers)
+    {
+        instructionList.add(new TableSwitchInsnNode(min, max, defaultHandler,
+            handlers));
         return this;
     }
 
-    public CodeBlock visitLookupSwitchInsn(LabelNode arg0, int[] arg1, LabelNode[] arg2) {
-        this.instructionList.add(new LookupSwitchInsnNode(arg0, arg1, arg2));
+    public CodeBlock visitLookupSwitchInsn(final LabelNode defaultHandler,
+        final int[] keys, final LabelNode[] handlers)
+    {
+        instructionList.add(new LookupSwitchInsnNode(defaultHandler, keys,
+            handlers));
         return this;
     }
 
-    public CodeBlock visitMultiANewArrayInsn(String arg0, int arg1) {
-        this.instructionList.add(new MultiANewArrayInsnNode(arg0, arg1));
+    public CodeBlock visitMultiANewArrayInsn(final String desc, final int dims)
+    {
+        instructionList.add(new MultiANewArrayInsnNode(desc, dims));
         return this;
     }
 
-    public CodeBlock visitTryCatchBlock(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                                        String arg3) {
-        this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
+    public CodeBlock visitTryCatchBlock(final LabelNode scopeStart,
+        final LabelNode scopeEnd, final LabelNode handler,
+        final String exceptionType)
+    {
+        tryCatchBlockList.add(new TryCatchBlockNode(scopeStart, scopeEnd,
+            handler, exceptionType));
         return this;
     }
 
-    public CodeBlock visitLocalVariable(String arg0, String arg1, String arg2,
-                                        LabelNode arg3, LabelNode arg4, int arg5) {
-        this.localVariableList.add(new LocalVariableNode(arg0, arg1, arg2, arg3, arg4, arg5));
+    public CodeBlock visitLocalVariable(final String varName,
+        final String varDesc, final String signature,
+        final LabelNode scopeStart, final LabelNode scopeEnd,
+        final int varIndex)
+    {
+        localVariableList.add(new LocalVariableNode(varName, varDesc, signature,
+            scopeStart, scopeEnd, varIndex));
         return this;
     }
 
-    public CodeBlock visitLineNumber(int arg0, LabelNode arg1) {
-        this.instructionList.add(new LineNumberNode(arg0, arg1));
+    public CodeBlock visitLineNumber(final int lineNumber,
+        final LabelNode start)
+    {
+        instructionList.add(new LineNumberNode(lineNumber, start));
         return this;
     }
 
-    public CodeBlock tableswitch(int min, int max, LabelNode defaultLabel, LabelNode[] cases) {
-        this.instructionList.add(new TableSwitchInsnNode(min, max, defaultLabel, cases));
+    public CodeBlock tableswitch(final int min, final int max,
+        final LabelNode defaultLabel, final LabelNode[] cases)
+    {
+        instructionList.add(new TableSwitchInsnNode(min, max, defaultLabel,
+            cases));
         return this;
     }
 
-    public CodeBlock visitFrame(int arg0, int arg1, Object[] arg2, int arg3, Object[] arg4) {
-        this.instructionList.add(new FrameNode(arg0, arg1, arg2, arg3, arg4));
+    public CodeBlock visitFrame(final int opcode, final int nrLocals,
+        final Object[] localTypes, final int nrStackElements,
+        final Object[] stackElements)
+    {
+        instructionList.add(new FrameNode(opcode, nrLocals, localTypes,
+            nrStackElements, stackElements));
         return this;
     }
 
-    public InsnList getInstructionList() {
+    public InsnList getInstructionList()
+    {
         return instructionList;
     }
 
-    public List<TryCatchBlockNode> getTryCatchBlockList() {
+    public List<TryCatchBlockNode> getTryCatchBlockList()
+    {
         return tryCatchBlockList;
     }
 
-    public List<LocalVariableNode> getLocalVariableList() {
+    public List<LocalVariableNode> getLocalVariableList()
+    {
         return localVariableList;
     }
 
-    public List<VisibleAnnotation> getAnnotations() {
+    public List<VisibleAnnotation> getAnnotations()
+    {
         return annotations;
     }
 
     /**
      * adds a compressed frame to the stack
      *
-     * @param stackArguments the argument types on the stack, represented as "class path names" e.g java/lang/RuntimeException
+     * @param stackArguments the argument types on the stack, represented as
+     * "class path names" e.g java/lang/RuntimeException
      */
-    public CodeBlock frame_same(Object... stackArguments) {
-        int type;
-        if (stackArguments.length == 0) {
-            type = F_SAME;
-        } else if (stackArguments.length == 1) {
-            type = F_SAME1;
-        } else {
-            throw new IllegalArgumentException("same frame should have 0 or 1 arguments on stack");
+    public CodeBlock frame_same(final Object... stackArguments)
+    {
+        final int type;
+
+        switch (stackArguments.length) {
+            case 0:
+                type = Opcodes.F_SAME;
+                break;
+            case 1:
+                type = Opcodes.F_SAME1;
+                break;
+            default:
+                throw new IllegalArgumentException("same frame should have 0"
+                    + " or 1 arguments on stack");
         }
-        this.instructionList.add(new FrameNode(type, 0, null, stackArguments.length, stackArguments));
+
+        instructionList.add(new FrameNode(type, 0, null, stackArguments.length,
+            stackArguments));
         return this;
     }
 
-    public CodeBlock prepend(CodeBlock codeBlock) {
-        if (codeBlock.returns()) {
-            this.returns = true;
-        }
-        this.annotations.addAll(codeBlock.getAnnotations());
-        this.getInstructionList().insert(codeBlock.getInstructionList());
+    public CodeBlock prepend(final CodeBlock codeBlock)
+    {
+        if (codeBlock.returns())
+            returns = true;
+
+        annotations.addAll(codeBlock.annotations);
+        instructionList.insert(codeBlock.instructionList);
         return this;
     }
 
-    public CodeBlock append(CodeBlock codeBlock) {
-        if (codeBlock.returns()) {
-            this.returns = true;
-        }
-        this.getInstructionList().add(codeBlock.getInstructionList());
-        this.tryCatchBlockList.addAll( codeBlock.getTryCatchBlockList() );
-        this.annotations.addAll(codeBlock.getAnnotations());
+    public CodeBlock append(final CodeBlock codeBlock)
+    {
+        if (codeBlock.returns())
+            returns = true;
+
+        instructionList.add(codeBlock.instructionList);
+        tryCatchBlockList.addAll(codeBlock.tryCatchBlockList);
+        annotations.addAll(codeBlock.annotations);
         return this;
     }
 
-    public VisibleAnnotation annotation(Class<?> type) {
-        VisibleAnnotation annotation = new VisibleAnnotation(ci(type));
+    public VisibleAnnotation annotation(final Class<?> type)
+    {
+        final VisibleAnnotation annotation = new VisibleAnnotation(ci(type));
         addAnnotation(annotation);
         return annotation;
     }
 
-    public CodeBlock addAnnotation(VisibleAnnotation annotation) {
+    public CodeBlock addAnnotation(final VisibleAnnotation annotation)
+    {
         annotations.add(annotation);
         return this;
     }
 
-    public int arity() {
-        return this.arity;
+    public CodeBlock addAll(final InsnList insnList)
+    {
+        instructionList.add(insnList);
+        return this;
     }
 
-    public boolean returns() {
+    public int arity()
+    {
+        return arity;
+    }
+
+    public boolean returns()
+    {
         return returns;
     }
 }
