@@ -16,6 +16,7 @@
 package me.qmx.jitescript;
 
 import static me.qmx.jitescript.CodeBlock.newCodeBlock;
+import static me.qmx.jitescript.util.CodegenUtils.ci;
 import static me.qmx.jitescript.util.CodegenUtils.p;
 import static me.qmx.jitescript.util.CodegenUtils.sig;
 
@@ -37,7 +38,7 @@ public class JiteClass implements Opcodes {
     private final List<MethodDefinition> methods = new ArrayList<MethodDefinition>();
     private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
     private final List<String> interfaces = new ArrayList<String>();
-    private final List<VisibleAnnotation> annotations = new ArrayList<VisibleAnnotation>();
+    private final List<AnnotationData> annotations = new ArrayList<AnnotationData>();
     private final List<ChildEntry> childClasses = new ArrayList<ChildEntry>();
     private final String className;
     private final String superClassName;
@@ -78,6 +79,16 @@ public class JiteClass implements Opcodes {
         for (String anInterface : interfaces) {
             this.interfaces.add(anInterface);
         }
+    }
+
+    public AnnotationData annotate(Class<?> annotationType) {
+        return annotate(ci(annotationType));
+    }
+
+    private AnnotationData annotate(String typeName) {
+        AnnotationData annotation = new AnnotationData(typeName);
+        annotations.add(annotation);
+        return annotation;
     }
 
     public int getAccess() {
@@ -183,7 +194,7 @@ public class JiteClass implements Opcodes {
         return toBytes(JDKVersion.V1_6);
     }
 
-    public void addAnnotation(VisibleAnnotation annotation) {
+    public void addAnnotation(AnnotationData annotation) {
         annotations.add(annotation);
     }
 
@@ -226,7 +237,7 @@ public class JiteClass implements Opcodes {
             node.visibleAnnotations = new ArrayList<AnnotationNode>();
         }
 
-        for (VisibleAnnotation a : annotations) {
+        for (AnnotationData a : annotations) {
             node.visibleAnnotations.add(a.getNode());
         }
 

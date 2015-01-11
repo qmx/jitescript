@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
@@ -25,7 +26,7 @@ public class AnnotationsTest {
     public void testAnnotationWithScalarValue() throws Exception {
         JiteClass jiteClass = new JiteClass("AnnotatedClass", p(Object.class), new String[0]) {{
             defineDefaultConstructor();
-            VisibleAnnotation annotation = new VisibleAnnotation(ScalarAnnotation.class);
+            AnnotationData annotation = new AnnotationData(ScalarAnnotation.class);
             annotation.value("breakfastItem", "Waffles!");
             addAnnotation(annotation);
         }};
@@ -41,7 +42,7 @@ public class AnnotationsTest {
     public void testAnnotationWithArrayValue() throws Exception {
         JiteClass jiteClass = new JiteClass("AnnotatedClass", p(Object.class), new String[0]) {{
             defineDefaultConstructor();
-            VisibleAnnotation annotation = new VisibleAnnotation(AnnotationWithArray.class);
+            AnnotationData annotation = new AnnotationData(AnnotationWithArray.class);
             annotation.arrayValue("favoriteColors", "pink", "purple", "green");
             addAnnotation(annotation);
         }};
@@ -57,7 +58,7 @@ public class AnnotationsTest {
     public void testAnnotationWithAnnotationValue() throws Exception {
         JiteClass jiteClass = new JiteClass("AnnotatedClass", p(Object.class), new String[0]) {{
             defineDefaultConstructor();
-            VisibleAnnotation annotation = new VisibleAnnotation(AnnotationWithAnnotation.class);
+            AnnotationData annotation = new AnnotationData(AnnotationWithAnnotation.class);
             annotation.annotationValue("element", ScalarAnnotation.class).value("breakfastItem", "Pancakes!");
             addAnnotation(annotation);
         }};
@@ -73,7 +74,7 @@ public class AnnotationsTest {
     public void testAnnotationWithEnumValue() throws Exception {
         JiteClass jiteClass = new JiteClass("AnnotatedClass", p(Object.class), new String[0]) {{
             defineDefaultConstructor();
-            VisibleAnnotation annotation = new VisibleAnnotation(AnnotationWithEnum.class);
+            AnnotationData annotation = new AnnotationData(AnnotationWithEnum.class);
             annotation.enumValue("color", Colors.PINK);
             addAnnotation(annotation);
         }};
@@ -92,7 +93,7 @@ public class AnnotationsTest {
             defineMethod("annotatedMethod", ACC_PUBLIC, sig(String.class), new CodeBlock() {{
                 ldc("Sausages!");
                 areturn();
-                annotation(ScalarAnnotation.class).value("breakfastItem", "Sausages!");
+                annotate(ScalarAnnotation.class).value("breakfastItem", "Sausages!");
             }});
         }};
 
@@ -109,7 +110,7 @@ public class AnnotationsTest {
         JiteClass jiteClass = new JiteClass("AnnotatedClass", p(Object.class), new String[0]) {{
             defineDefaultConstructor();
             defineField("annotatedField", ACC_PUBLIC, ci(String.class), null)
-                .addAnnotation(new VisibleAnnotation(ScalarAnnotation.class).value("breakfastItem", "Toast!"));
+                .addAnnotation(new AnnotationData(ScalarAnnotation.class).value("breakfastItem", "Toast!"));
         }};
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
@@ -118,6 +119,21 @@ public class AnnotationsTest {
 
         assertNotNull("ScalarAnnotation was not on field", annotation);
         assertEquals(annotation.breakfastItem(), "Toast!");
+    }
+
+    @Test
+    public void testAnnotationsArrayValue() throws Exception {
+        JiteClass jiteClass = new JiteClass("ClassWithRepeatedAnnotations");
+        jiteClass.defineDefaultConstructor();
+        jiteClass.annotate(Container.class).arrayValue("value",
+            new AnnotationData(Entry.class).value("name", "Apples"),
+            new AnnotationData(Entry.class).value("name", "Oranges")
+        );
+        Class<?> clazz = new DynamicClassLoader().define(jiteClass);
+        assertTrue(clazz.isAnnotationPresent(Container.class));
+        assertEquals(clazz.getAnnotationsByType(Entry.class).length, 2);
+        assertEquals(clazz.getAnnotationsByType(Entry.class)[0].name(), "Apples");
+        assertEquals(clazz.getAnnotationsByType(Entry.class)[1].name(), "Oranges");
     }
 
     @Target({ TYPE, METHOD, FIELD })
@@ -146,6 +162,21 @@ public class AnnotationsTest {
     public @interface AnnotationWithEnum {
 
         Colors color();
+    }
+
+    @Target(TYPE)
+    @Retention(RUNTIME)
+    @Repeatable(Container.class)
+    public @interface Entry {
+
+        String name();
+    }
+
+    @Target(TYPE)
+    @Retention(RUNTIME)
+    public @interface Container {
+
+        Entry[] value();
     }
 
     public enum Colors {

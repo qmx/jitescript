@@ -63,7 +63,7 @@ public class MethodDefinition {
         for (LocalVariableNode localVariableNode : getMethodBody().getLocalVariableList()) {
             method.localVariables.add(localVariableNode);
         }
-        for (VisibleAnnotation annotation : methodBody.getAnnotations()) {
+        for (AnnotationData annotation : methodBody.getAnnotations()) {
             method.visibleAnnotations.add(annotation.getNode());
         }
         return method;

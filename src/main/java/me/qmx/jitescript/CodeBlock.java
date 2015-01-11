@@ -37,7 +37,7 @@ public class CodeBlock implements Opcodes {
     private InsnList instructionList = new InsnList();
     private List<TryCatchBlockNode> tryCatchBlockList = new ArrayList<TryCatchBlockNode>();
     private List<LocalVariableNode> localVariableList = new ArrayList<LocalVariableNode>();
-    private List<VisibleAnnotation> annotations = new ArrayList<VisibleAnnotation>();
+    private List<AnnotationData> annotations = new ArrayList<AnnotationData>();
     private int arity = 0;
     private boolean returns = false;
 
@@ -1084,7 +1084,7 @@ public class CodeBlock implements Opcodes {
         return localVariableList;
     }
 
-    public List<VisibleAnnotation> getAnnotations() {
+    public List<AnnotationData> getAnnotations() {
         return annotations;
     }
 
@@ -1125,13 +1125,13 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public VisibleAnnotation annotation(Class<?> type) {
-        VisibleAnnotation annotation = new VisibleAnnotation(ci(type));
+    public AnnotationData annotate(Class<?> type) {
+        AnnotationData annotation = new AnnotationData(ci(type));
         addAnnotation(annotation);
         return annotation;
     }
 
-    public CodeBlock addAnnotation(VisibleAnnotation annotation) {
+    public CodeBlock addAnnotation(AnnotationData annotation) {
         annotations.add(annotation);
         return this;
     }
