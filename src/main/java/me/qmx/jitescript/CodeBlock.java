@@ -1125,6 +1125,11 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
+    public CodeBlock lambda(JiteClass jiteClass, LambdaBlock lambda) {
+        lambda.apply(jiteClass, this);
+        return this;
+    }
+
     public VisibleAnnotation annotation(Class<?> type) {
         VisibleAnnotation annotation = new VisibleAnnotation(ci(type));
         addAnnotation(annotation);
