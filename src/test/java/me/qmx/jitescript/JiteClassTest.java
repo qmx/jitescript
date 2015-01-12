@@ -28,7 +28,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.function.UnaryOperator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -200,10 +199,10 @@ public class JiteClassTest {
         JiteClass test = new JiteClass("Test", new String[0]) {{
             final JiteClass jiteClass = this;
             defineDefaultConstructor();
-            defineMethod("getCallback", ACC_PUBLIC | ACC_STATIC, sig(UnaryOperator.class), new CodeBlock() {{
+            defineMethod("getCallback", ACC_PUBLIC | ACC_STATIC, "()Ljava/util/function/UnaryOperator;", new CodeBlock() {{
                 ldc("Hello, ");
                 lambda(jiteClass, new LambdaBlock() {{
-                    function(p(UnaryOperator.class), "apply", sig(Object.class, Object.class));
+                    function("java/util/function/UnaryOperator", "apply", sig(Object.class, Object.class));
                     specialize(sig(String.class, String.class));
                     capture(String.class);
                     delegateTo(ACC_STATIC, sig(String.class, String.class, String.class), new CodeBlock() {{
