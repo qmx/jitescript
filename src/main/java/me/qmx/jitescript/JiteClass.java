@@ -45,6 +45,7 @@ public class JiteClass implements Opcodes {
     private String sourceDebug;
     private int access = ACC_PUBLIC;
     private String parentClassName;
+    private int nextId;
 
     /**
      * Creates a new class representation
@@ -90,6 +91,10 @@ public class JiteClass implements Opcodes {
 
     public String getParentClassName() {
         return parentClassName;
+    }
+
+    public String reserveLambda() {
+        return "lambda$" + nextId++;
     }
 
     public void setAccess(int access) {

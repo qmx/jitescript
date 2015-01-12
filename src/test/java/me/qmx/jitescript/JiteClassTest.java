@@ -38,7 +38,11 @@ public class JiteClassTest {
 
     public static class DynamicClassLoader extends ClassLoader {
         public Class<?> define(JiteClass jiteClass) {
-            byte[] classBytes = jiteClass.toBytes();
+            return define(jiteClass, JDKVersion.V1_6);
+        }
+
+        public Class<?> define(JiteClass jiteClass, JDKVersion version) {
+            byte[] classBytes = jiteClass.toBytes(version);
             return super.defineClass(c(jiteClass.getClassName()), classBytes, 0, classBytes.length);
         }
     }
@@ -181,5 +185,63 @@ public class JiteClassTest {
             Class<?> childClazz = classLoader.define(child);
             assertFalse(childClazz.getConstructor(new Class[0]).isAccessible());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testLambda() throws Exception {
+
+        if (!System.getProperty("java.version").startsWith("1.8")) {
+            System.out.println("Can't run test without Java 8");
+            return;
+        }
+
+        JiteClass test = new JiteClass("Test", new String[0]) {{
+            final JiteClass jiteClass = this;
+            defineDefaultConstructor();
+            defineMethod("getCallback", ACC_PUBLIC | ACC_STATIC, "()Ljava/util/function/UnaryOperator;", new CodeBlock() {{
+                ldc("Hello, ");
+                lambda(jiteClass, new LambdaBlock() {{
+                    function("java/util/function/UnaryOperator", "apply", sig(Object.class, Object.class));
+                    specialize(sig(String.class, String.class));
+                    capture(String.class);
+                    delegateTo(ACC_STATIC, sig(String.class, String.class, String.class), new CodeBlock() {{
+                        newobj(p(StringBuilder.class));
+                        dup();
+                        invokespecial(p(StringBuilder.class), "<init>", sig(void.class));
+                        aload(0);
+                        invokevirtual(p(StringBuilder.class), "append", sig(StringBuilder.class, String.class));
+                        aload(1);
+                        invokevirtual(p(StringBuilder.class), "append", sig(StringBuilder.class, String.class));
+                        ldc("!");
+                        invokevirtual(p(StringBuilder.class), "append", sig(StringBuilder.class, String.class));
+                        invokevirtual(p(StringBuilder.class), "toString", sig(String.class));
+                        areturn();
+                    }});
+                }});
+                areturn();
+            }});
+        }};
+
+        DynamicClassLoader classLoader = new DynamicClassLoader();
+        Class<?> clazz = classLoader.define(test, JDKVersion.V1_8);
+        Object callback = clazz.getMethod("getCallback").invoke(null);
+
+        shouldImplement(callback, "java.util.function.UnaryOperator");
+
+        Method method = callback.getClass().getMethod("apply", Object.class);
+        method.setAccessible(true);
+        assertEquals(method.invoke(callback, "World"), "Hello, World!");
+    }
+
+    private void shouldImplement(Object object, String interfaceType) {
+        boolean found = false;
+        for (Class<?> i : object.getClass().getInterfaces()) {
+            if (i.getCanonicalName().equals(interfaceType)) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(object + " does not implement " + interfaceType, found);
     }
 }
