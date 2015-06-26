@@ -166,12 +166,8 @@ public class JiteClass implements Opcodes {
     }
 
     public void defineDefaultConstructor(int access) {
-        defineMethod("<init>", access, sig(void.class),
-            newCodeBlock()
-                .aload(0)
-                .invokespecial(superClassName, "<init>", sig(void.class))
-                .voidreturn()
-        );
+        defineMethod("<init>", access, sig(void.class), newCodeBlock().aload(0)
+                .invokespecial(superClassName, "<init>", sig(void.class)).voidreturn());
     }
 
     /**

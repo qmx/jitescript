@@ -195,7 +195,8 @@ public final class CodegenUtils {
         return classes;
     }
 
-    public static String getAnnotatedBindingClassName(String javaMethodName, String typeName, boolean isStatic, int required, int optional, boolean multi, boolean framed) {
+    public static String getAnnotatedBindingClassName(String javaMethodName, String typeName, boolean isStatic, int required,
+            int optional, boolean multi, boolean framed) {
         String commonClassSuffix;
         if (multi) {
             commonClassSuffix = (isStatic ? "$s$" : "$i$") + javaMethodName;

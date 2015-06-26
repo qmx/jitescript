@@ -534,8 +534,7 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock trycatch(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                              String arg3) {
+    public CodeBlock trycatch(LabelNode arg0, LabelNode arg1, LabelNode arg2, String arg3) {
         this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
         return this;
     }
@@ -1029,8 +1028,7 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock visitTableSwitchInsn(int arg0, int arg1, LabelNode arg2,
-                                          LabelNode[] arg3) {
+    public CodeBlock visitTableSwitchInsn(int arg0, int arg1, LabelNode arg2, LabelNode[] arg3) {
         this.instructionList.add(new TableSwitchInsnNode(arg0, arg1, arg2, arg3));
         return this;
     }
@@ -1045,14 +1043,12 @@ public class CodeBlock implements Opcodes {
         return this;
     }
 
-    public CodeBlock visitTryCatchBlock(LabelNode arg0, LabelNode arg1, LabelNode arg2,
-                                        String arg3) {
+    public CodeBlock visitTryCatchBlock(LabelNode arg0, LabelNode arg1, LabelNode arg2, String arg3) {
         this.tryCatchBlockList.add(new TryCatchBlockNode(arg0, arg1, arg2, arg3));
         return this;
     }
 
-    public CodeBlock visitLocalVariable(String arg0, String arg1, String arg2,
-                                        LabelNode arg3, LabelNode arg4, int arg5) {
+    public CodeBlock visitLocalVariable(String arg0, String arg1, String arg2, LabelNode arg3, LabelNode arg4, int arg5) {
         this.localVariableList.add(new LocalVariableNode(arg0, arg1, arg2, arg3, arg4, arg5));
         return this;
     }
@@ -1120,7 +1116,7 @@ public class CodeBlock implements Opcodes {
             this.returns = true;
         }
         this.getInstructionList().add(codeBlock.getInstructionList());
-        this.tryCatchBlockList.addAll( codeBlock.getTryCatchBlockList() );
+        this.tryCatchBlockList.addAll(codeBlock.getTryCatchBlockList());
         this.annotations.addAll(codeBlock.getAnnotations());
         return this;
     }

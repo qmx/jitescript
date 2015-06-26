@@ -46,23 +46,23 @@ public class JiteClassTest {
     @Test
     public void testDSL() throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final String className = "helloTest";
-        JiteClass jiteClass = new JiteClass(className) {{
-            // you can use the pre-constructor style
-            defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new CodeBlock() {{
-                ldc("helloWorld");
-                getstatic(p(System.class), "out", ci(PrintStream.class));
-                swap();
-                invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
-                voidreturn();
-            }});
-            // or use chained api
-            defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class),
-                    newCodeBlock()
-                            .ldc("helloWorld")
-                            .areturn()
-            );
+        JiteClass jiteClass = new JiteClass(className) {
+            {
+                // you can use the pre-constructor style
+                defineMethod("main", ACC_PUBLIC | ACC_STATIC, sig(void.class, String[].class), new CodeBlock() {
+                    {
+                        ldc("helloWorld");
+                        getstatic(p(System.class), "out", ci(PrintStream.class));
+                        swap();
+                        invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
+                        voidreturn();
+                    }
+                });
+                // or use chained api
+                defineMethod("hello", ACC_PUBLIC | ACC_STATIC, sig(String.class), newCodeBlock().ldc("helloWorld").areturn());
 
-        }};
+            }
+        };
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Method helloMethod = clazz.getMethod("hello");
@@ -77,17 +77,14 @@ public class JiteClassTest {
     @Test
     public void testInterfaceImpl() throws IllegalAccessException, InstantiationException {
         String className = "Test";
-        JiteClass jiteClass = new JiteClass(className, new String[]{p(Runnable.class)}) {{
+        JiteClass jiteClass = new JiteClass(className, new String[]{p(Runnable.class)}) {
+            {
 
-            defineDefaultConstructor();
+                defineDefaultConstructor();
 
-            defineMethod("run", ACC_PUBLIC, sig(void.class),
-                    newCodeBlock()
-                            .ldc("Test")
-                            .aprintln()
-                            .voidreturn()
-            );
-        }};
+                defineMethod("run", ACC_PUBLIC, sig(void.class), newCodeBlock().ldc("Test").aprintln().voidreturn());
+            }
+        };
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Object o = clazz.newInstance();
@@ -102,9 +99,11 @@ public class JiteClassTest {
     public void generateClassWithSuperclasses() throws IllegalAccessException, InstantiationException {
         String className = "Teste";
         String superClass = p(LOL.class);
-        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {{
-            defineDefaultConstructor();
-        }};
+        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {
+            {
+                defineDefaultConstructor();
+            }
+        };
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Object o = clazz.newInstance();
         assertTrue(o instanceof LOL);
@@ -118,20 +117,24 @@ public class JiteClassTest {
     public void superclassHashNondefaultConstructor() throws IllegalAccessException, InstantiationException {
         String className = "Sub";
         String superClass = p(NondefaultConstructor.class);
-        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {{
-            defineDefaultConstructor();
-        }};
+        JiteClass jiteClass = new JiteClass(className, superClass, new String[]{}) {
+            {
+                defineDefaultConstructor();
+            }
+        };
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
-        NondefaultConstructor o = (NondefaultConstructor)clazz.newInstance();
+        NondefaultConstructor o = (NondefaultConstructor) clazz.newInstance();
 
         assertEquals("hello", o.foo);
     }
 
     @Test
     public void testFields() throws Exception {
-        JiteClass jiteClass = new JiteClass("testFields", p(Object.class), new String[0]) {{
-            defineField("foo", ACC_PUBLIC | ACC_STATIC, ci(String.class), "bar");
-        }};
+        JiteClass jiteClass = new JiteClass("testFields", p(Object.class), new String[0]) {
+            {
+                defineField("foo", ACC_PUBLIC | ACC_STATIC, ci(String.class), "bar");
+            }
+        };
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
         Field foo = clazz.getDeclaredField("foo");
@@ -142,10 +145,12 @@ public class JiteClassTest {
 
     @Test(expected = IllegalAccessException.class)
     public void testPrivateClass() throws Exception {
-        JiteClass jiteClass = new JiteClass("Test", new String[0]) {{
-            setAccess(ACC_PRIVATE);
-            defineDefaultConstructor();
-        }};
+        JiteClass jiteClass = new JiteClass("Test", new String[0]) {
+            {
+                setAccess(ACC_PRIVATE);
+                defineDefaultConstructor();
+            }
+        };
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
 
@@ -154,9 +159,11 @@ public class JiteClassTest {
 
     @Test(expected = IllegalAccessException.class)
     public void testPrivateConstructor() throws Exception {
-        JiteClass jiteClass = new JiteClass("Test", new String[0]) {{
-            defineDefaultConstructor(ACC_PRIVATE);
-        }};
+        JiteClass jiteClass = new JiteClass("Test", new String[0]) {
+            {
+                defineDefaultConstructor(ACC_PRIVATE);
+            }
+        };
 
         Class<?> clazz = new DynamicClassLoader().define(jiteClass);
 
@@ -165,14 +172,18 @@ public class JiteClassTest {
 
     @Test
     public void testPrivateInnerClass() throws Exception {
-        JiteClass parent = new JiteClass("test/Parent") {{
-            setAccess(ACC_PUBLIC);
-            defineDefaultConstructor();
-            addChildClass(new JiteClass(getClassName() + "$Child") {{
-                setAccess(ACC_PRIVATE);
+        JiteClass parent = new JiteClass("test/Parent") {
+            {
+                setAccess(ACC_PUBLIC);
                 defineDefaultConstructor();
-            }});
-        }};
+                addChildClass(new JiteClass(getClassName() + "$Child") {
+                    {
+                        setAccess(ACC_PRIVATE);
+                        defineDefaultConstructor();
+                    }
+                });
+            }
+        };
 
         DynamicClassLoader classLoader = new DynamicClassLoader();
         Class<?> parentClazz = classLoader.define(parent);
