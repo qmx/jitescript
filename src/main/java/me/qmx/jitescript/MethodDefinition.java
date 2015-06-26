@@ -25,35 +25,36 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
  */
 public class MethodDefinition {
 
-    private final String methodName;
-    private final int modifiers;
-    private final String signature;
-    private final CodeBlock methodBody;
+	private final String methodName;
+	private final int modifiers;
+	private final String signature;
+	private final CodeBlock methodBody;
 
-    public MethodDefinition(String methodName, int modifiers, String signature, CodeBlock methodBody) {
-        this.methodName = methodName;
-        this.modifiers = modifiers;
-        this.signature = signature;
-        this.methodBody = methodBody;
-    }
+	public MethodDefinition(String methodName, int modifiers, String signature,
+			CodeBlock methodBody) {
+		this.methodName = methodName;
+		this.modifiers = modifiers;
+		this.signature = signature;
+		this.methodBody = methodBody;
+	}
 
-    public String getMethodName() {
-        return methodName;
-    }
+	public String getMethodName() {
+		return methodName;
+	}
 
-    public int getModifiers() {
-        return modifiers;
-    }
+	public int getModifiers() {
+		return modifiers;
+	}
 
-    public CodeBlock getMethodBody() {
-        return methodBody;
-    }
+	public CodeBlock getMethodBody() {
+		return methodBody;
+	}
 
-    public String getSignature() {
-        return signature;
-    }
+	public String getSignature() {
+		return signature;
+	}
 
-    public MethodNode getMethodNode() {
+	public MethodNode getMethodNode() {
         MethodNode method = new MethodNode(getModifiers(), getMethodName(), getSignature(), null, null);
         method.visibleAnnotations = new ArrayList<VisibleAnnotation>();
         method.instructions.add(getMethodBody().getInstructionList());
