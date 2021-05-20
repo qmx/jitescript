@@ -2,6 +2,7 @@ package me.qmx.jitescript;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.FieldNode;
 
 public class FieldDefinition {
@@ -22,7 +23,7 @@ public class FieldDefinition {
 
     public FieldNode getFieldNode() {
         FieldNode node = new FieldNode(modifiers, fieldName, signature, null, value);
-        node.visibleAnnotations = new ArrayList<VisibleAnnotation>();
+        node.visibleAnnotations = new ArrayList<AnnotationNode>();
         for (VisibleAnnotation annotation : annotations) {
             node.visibleAnnotations.add(annotation.getNode());
         }

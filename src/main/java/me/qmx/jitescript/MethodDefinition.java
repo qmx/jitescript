@@ -16,6 +16,7 @@
 package me.qmx.jitescript;
 
 import java.util.ArrayList;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
@@ -55,7 +56,7 @@ public class MethodDefinition {
 
     public MethodNode getMethodNode() {
         MethodNode method = new MethodNode(getModifiers(), getMethodName(), getSignature(), null, null);
-        method.visibleAnnotations = new ArrayList<VisibleAnnotation>();
+        method.visibleAnnotations = new ArrayList<AnnotationNode>();
         method.instructions.add(getMethodBody().getInstructionList());
         for (TryCatchBlockNode tryCatchBlockNode : getMethodBody().getTryCatchBlockList()) {
             method.tryCatchBlocks.add(tryCatchBlockNode);
