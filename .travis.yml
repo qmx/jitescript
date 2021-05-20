@@ -1,1 +1,7 @@
 language: java
+matrix:
+  include:
+    - arch: amd64
+    - arch: ppc64le
+      addons: [ apt: [ packages: maven ]]
+    
