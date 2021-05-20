@@ -30,7 +30,7 @@ public class VisibleAnnotation {
         return this;
     }
 
-    public VisibleAnnotation enumValue(String name, Enum value) {
+    public VisibleAnnotation enumValue(String name, Enum<?> value) {
         enumValue(name, ci(value.getClass()), value.name());
         return this;
     }
