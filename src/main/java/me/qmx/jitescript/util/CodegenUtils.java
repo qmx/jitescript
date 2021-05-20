@@ -39,14 +39,14 @@ public final class CodegenUtils {
     /**
      * Creates a class path name, from a Class.
      */
-    public static String p(Class n) {
+    public static String p(Class<?> n) {
         return n.getName().replace('.', '/');
     }
 
     /**
      * Creates a class identifier of form Labc/abc;, from a Class.
      */
-    public static String ci(Class n) {
+    public static String ci(Class<?> n) {
         if (n.isArray()) {
             n = n.getComponentType();
             if (n.isPrimitive()) {
@@ -104,28 +104,28 @@ public final class CodegenUtils {
     /**
      * Creates a human-readable representation, from a Class.
      */
-    public static String human(Class n) {
+    public static String human(Class<?> n) {
         return n.getCanonicalName();
     }
 
     /**
      * Create a method signature from the given param types and return values
      */
-    public static String sig(Class retval, Class... params) {
+    public static String sig(Class<?> retval, Class<?>... params) {
         return sigParams(params) + ci(retval);
     }
 
-    public static String sig(Class[] retvalParams) {
-        Class[] justParams = new Class[retvalParams.length - 1];
+    public static String sig(Class<?>[] retvalParams) {
+        Class<?>[] justParams = new Class<?>[retvalParams.length - 1];
         System.arraycopy(retvalParams, 1, justParams, 0, justParams.length);
         return sigParams(justParams) + ci(retvalParams[0]);
     }
 
-    public static String sig(Class retval, String descriptor, Class... params) {
+    public static String sig(Class<?> retval, String descriptor, Class<?>... params) {
         return sigParams(descriptor, params) + ci(retval);
     }
 
-    public static String sigParams(Class... params) {
+    public static String sigParams(Class<?>... params) {
         StringBuilder signature = new StringBuilder("(");
 
         for (int i = 0; i < params.length; i++) {
@@ -137,7 +137,7 @@ public final class CodegenUtils {
         return signature.toString();
     }
 
-    public static String sigParams(String descriptor, Class... params) {
+    public static String sigParams(String descriptor, Class<?>... params) {
         StringBuilder signature = new StringBuilder("(");
 
         signature.append(descriptor);
@@ -151,11 +151,11 @@ public final class CodegenUtils {
         return signature.toString();
     }
 
-    public static String pretty(Class retval, Class... params) {
+    public static String pretty(Class<?> retval, Class<?>... params) {
         return prettyParams(params) + human(retval);
     }
 
-    public static String prettyParams(Class... params) {
+    public static String prettyParams(Class<?>... params) {
         StringBuilder signature = new StringBuilder("(");
 
         for (int i = 0; i < params.length; i++) {
@@ -170,25 +170,25 @@ public final class CodegenUtils {
         return signature.toString();
     }
 
-    public static Class[] params(Class... classes) {
+    public static Class<?>[] params(Class<?>... classes) {
         return classes;
     }
 
-    public static Class[] params(Class cls, int times) {
-        Class[] classes = new Class[times];
+    public static Class<?>[] params(Class<?> cls, int times) {
+        Class<?>[] classes = new Class<?>[times];
         Arrays.fill(classes, cls);
         return classes;
     }
 
-    public static Class[] params(Class cls1, Class clsFill, int times) {
-        Class[] classes = new Class[times + 1];
+    public static Class<?>[] params(Class<?> cls1, Class<?> clsFill, int times) {
+        Class<?>[] classes = new Class<?>[times + 1];
         Arrays.fill(classes, clsFill);
         classes[0] = cls1;
         return classes;
     }
 
-    public static Class[] params(Class cls1, Class cls2, Class clsFill, int times) {
-        Class[] classes = new Class[times + 2];
+    public static Class<?>[] params(Class<?> cls1, Class<?> cls2, Class<?> clsFill, int times) {
+        Class<?>[] classes = new Class<?>[times + 2];
         Arrays.fill(classes, clsFill);
         classes[0] = cls1;
         classes[1] = cls2;
@@ -226,7 +226,7 @@ public final class CodegenUtils {
         }
     }
 
-    public static Class getBoxType(Class type) {
+    public static Class<?> getBoxType(Class<?> type) {
         if (type == int.class) {
             return Integer.class;
         } else if (type == byte.class) {
